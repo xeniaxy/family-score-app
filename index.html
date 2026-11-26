@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#FFB347">
+<title>🌟 家庭积分自律打卡本</title>
+<!-- PWA 配置 -->
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/icon-180.png">
+<link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="积分打卡">
+<meta name="mobile-web-app-capable" content="yes">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  * { -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Comic Sans MS', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+    background: linear-gradient(135deg, #FFF8DC 0%, #FFE4B5 50%, #FFDAB9 100%);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+  .card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: 2px solid #FFE4B5;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #FFB347 0%, #FF8C42 100%);
+    color: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(255,140,66,0.3);
+    transition: all 0.2s;
+  }
+  .btn-primary:active { transform: scale(0.95); }
+  .btn-green {
+    background: linear-gradient(135deg, #90EE90 0%, #3CB371 100%);
+    color: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(60,179,113,0.3);
+    transition: all 0.2s;
+  }
+  .btn-green:active { transform: scale(0.95); }
+  .btn-blue {
+    background: linear-gradient(135deg, #87CEEB 0%, #4169E1 100%);
+    color: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(65,105,225,0.3);
+    transition: all 0.2s;
+  }
+  .btn-blue:active { transform: scale(0.95); }
+  .tab-btn {
+    padding: 10px 16px;
+    border-radius: 14px;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+  .tab-btn.active {
+    background: linear-gradient(135deg, #FFB347 0%, #FF8C42 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255,140,66,0.3);
+  }
+  .tab-btn:not(.active) {
+    background: #FFF8DC;
+    color: #888;
+    border-color: #FFE4B5;
+  }
+  .tab-btn:not(.active):active { background: #FFE4B5; }
+  .nav-item.active { color: #FF8C42; }
+  .nav-item:not(.active) { color: #999; }
+  .check-btn {
+    width: 36px; height: 36px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    border: 2px solid #ddd;
+    background: white;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .check-btn.done {
+    background: linear-gradient(135deg, #90EE90 0%, #3CB371 100%);
+    color: white;
+    border-color: #3CB371;
+  }
+  .page { display: none; }
+  .page.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .bounce { animation: bounce 0.6s ease; }
+  @keyframes bounce { 0%,100%{transform:scale(1);} 50%{transform:scale(1.15);} }
+  .streak-badge {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .modal-overlay {
+    position: fixed; top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-content {
+    background: white;
+    border-radius: 24px;
+    padding: 24px;
+    width: 100%;
+    max-width: 360px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  ::-webkit-scrollbar { width: 0; }
+  .emoji-icon { font-size: 28px; }
+</style>
+</head>
+<body>
+
+<!-- ==================== 首页 ==================== -->
+<div id="page-home" class="page active px-4 pt-4">
+  <!-- 头部 -->
+  <div class="card p-4 mb-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-sm text-gray-500" id="greeting">👋 早上好！</div>
+        <div class="text-lg font-bold text-gray-800" id="childName">小朋友</div>
+      </div>
+      <div class="text-4xl">⭐</div>
+    </div>
+    <!-- 积分总览 -->
+    <div class="mt-4 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl p-4 text-white">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-sm opacity-90">总积分</div>
+          <div class="text-4xl font-bold" id="totalScore">0</div>
+        </div>
+        <div class="text-right">
+          <div class="text-sm opacity-90">本周积分</div>
+          <div class="text-2xl font-bold" id="weekScore">0</div>
+          <div class="streak-badge mt-1">🔥 连续打卡 <span id="streak">0</span> 天</div>
+        </div>
+      </div>
+    </div>
+    <!-- 快捷加减积分 -->
+    <div class="flex gap-3 mt-4">
+      <button onclick="openScoreModal('add')" class="btn-green flex-1 py-3 font-bold">➕ 加分</button>
+      <button onclick="openScoreModal('minus')" class="btn-primary flex-1 py-3 font-bold">➖ 扣分</button>
+    </div>
+  </div>
+
+  <!-- 今日任务快览 -->
+  <div class="card p-4 mb-4">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-bold text-lg text-gray-800">📋 今日打卡</div>
+      <div class="text-sm text-gray-500"><span id="todayDone">0</span>/<span id="todayTotal">6</span></div>
+    </div>
+    <div class="grid grid-cols-3 gap-3" id="todayTasks">
+      <!-- 动态生成 -->
+    </div>
+  </div>
+
+  <!-- 功能入口 -->
+  <div class="card p-4 mb-4">
+    <div class="font-bold text-lg text-gray-800 mb-3">🎯 打卡任务</div>
+    <div class="grid grid-cols-2 gap-3">
+      <button onclick="showPage('page-morning')" class="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-2xl p-4 text-left active:scale-95 transition">
+        <div class="text-3xl">🌅</div>
+        <div class="font-bold text-gray-800 mt-2">早读晚背</div>
+        <div class="text-xs text-gray-500">每日朗读背诵</div>
+      </button>
+      <button onclick="showPage('page-english')" class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-4 text-left active:scale-95 transition">
+        <div class="text-3xl">📝</div>
+        <div class="font-bold text-gray-800 mt-2">英语单词</div>
+        <div class="text-xs text-gray-500">听写默写打卡</div>
+      </button>
+      <button onclick="showPage('page-preview')" class="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl p-4 text-left active:scale-95 transition">
+        <div class="text-3xl">📚</div>
+        <div class="font-bold text-gray-800 mt-2">预习复习</div>
+        <div class="text-xs text-gray-500">语文数学英语</div>
+      </button>
+      <button onclick="showPage('page-daily')" class="bg-gradient-to-br from-pink-100 to-pink-200 rounded-2xl p-4 text-left active:scale-95 transition">
+        <div class="text-3xl">📅</div>
+        <div class="font-bold text-gray-800 mt-2">自律日计划</div>
+        <div class="text-xs text-gray-500">每日学习安排</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- 最近记录 -->
+  <div class="card p-4">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-bold text-lg text-gray-800">📝 最近积分记录</div>
+      <button onclick="showPage('page-history')" class="text-sm text-orange-500 font-bold">查看全部 →</button>
+    </div>
+    <div id="recentRecords" class="space-y-2">
+      <!-- 动态生成 -->
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 积分记录 ==================== -->
+<div id="page-history" class="page px-4 pt-4">
+  <div class="flex items-center mb-4">
+    <button onclick="showPage('page-home')" class="text-2xl mr-2">←</button>
+    <div class="text-xl font-bold text-gray-800">📊 积分记录</div>
+  </div>
+  <div class="card p-4">
+    <div class="flex gap-2 mb-4">
+      <button class="tab-btn active" onclick="filterHistory(this,'all')">全部</button>
+      <button class="tab-btn" onclick="filterHistory(this,'add')">加分</button>
+      <button class="tab-btn" onclick="filterHistory(this,'minus')">扣分</button>
+    </div>
+    <div id="historyList" class="space-y-2">
+      <!-- 动态生成 -->
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 兑换奖励 ==================== -->
+<div id="page-rewards" class="page px-4 pt-4">
+  <div class="flex items-center mb-4">
+    <button onclick="showPage('page-home')" class="text-2xl mr-2">←</button>
+    <div class="text-xl font-bold text-gray-800">🎁 兑换奖励</div>
+    <div class="ml-auto bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-4 py-1 rounded-full font-bold">
+      💰 <span id="rewardScore">0</span>分
+    </div>
+  </div>
+
+  <div id="rewardList" class="space-y-3">
+    <!-- 动态生成 -->
+  </div>
+
+  <div class="card p-4 mt-4">
+    <div class="font-bold text-gray-800 mb-2">📋 本周统计</div>
+    <div class="flex justify-between text-sm">
+      <span class="text-gray-600">本周所得积分：<span id="weekEarn" class="font-bold text-green-600">0</span>分</span>
+      <span class="text-gray-600">本周兑换积分：<span id="weekSpend" class="font-bold text-red-500">0</span>分</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 早读晚背 ==================== -->
+<div id="page-morning" class="page px-4 pt-4">
+  <div class="flex items-center mb-4">
+    <button onclick="showPage('page-home')" class="text-2xl mr-2">←</button>
+    <div class="text-xl font-bold text-gray-800">🌅 早读晚背打卡</div>
+  </div>
+
+  <div class="card p-4 mb-4">
+    <div class="flex gap-2 mb-4">
+      <button class="tab-btn active" onclick="showMW(this,'morning')">☀️ 早读</button>
+      <button class="tab-btn" onclick="showMW(this,'evening')">🌙 晚背</button>
+    </div>
+    <div id="mwCalendar" class="grid grid-cols-7 gap-1 text-center">
+      <!-- 动态生成日历 -->
+    </div>
+  </div>
+
+  <div class="card p-4 mb-4">
+    <div class="font-bold text-gray-800 mb-2">📖 今日任务</div>
+    <div id="mwToday" class="text-gray-600 text-sm leading-relaxed">
+      每天早上，大声朗读，让好习惯开启美好的一天！<br>
+      每天晚上，认真背诵，积累知识，遇见更好的自己！
+    </div>
+    <button onclick="checkMW()" class="btn-primary w-full py-3 mt-3 font-bold">✅ 已完成打卡（+3分）</button>
+  </div>
+</div>
+
+<!-- ==================== 英语单词 ==================== -->
+<div id="page-english" class="page px-4 pt-4">
+  <div class="flex items-center mb-4">
+    <button onclick="showPage('page-home')" class="text-2xl mr-2">←</button>
+    <div class="text-xl font-bold text-gray-800">📝 英语单词打卡</div>
+  </div>
+
+  <div class="card p-4 mb-4">
+    <div class="flex justify-between items-center mb-3">
+      <div class="font-bold text-gray-800" id="engMonth">2026年11月</div>
+      <div class="text-sm text-gray-500">今日完成：<span id="engToday">0</span>/2</div>
+    </div>
+    <div id="engCalendar" class="grid grid-cols-7 gap-2">
+      <!-- 动态生成 -->
+    </div>
+  </div>
+
+  <div class="card p-4 mb-4">
+    <div class="font-bold text-gray-800 mb-3">🎯 今日单词听写默写</div>
+    <div class="space-y-3">
+      <button onclick="checkEN('listen')" class="btn-blue w-full py-3 font-bold text-left px-5">
+        🎧 今日听写 <span class="float-right text-sm" id="engListenStatus">未完成</span>
+      </button>
+      <button onclick="checkEN('write')" class="btn-blue w-full py-3 font-bold text-left px-5">
+        ✍️ 今日默写 <span class="float-right text-sm" id="engWriteStatus">未完成</span>
+      </button>
+    </div>
+    <div class="mt-3 bg-yellow-50 rounded-xl p-3 text-sm text-gray-600">
+      💡 每日听写+默写完成可获 <b>+3分</b> 奖励
+    </div>
+  </div>
+
+  <div class="card p-4">
+    <div class="font-bold text-gray-800 mb-2">📒 今日收获</div>
+    <textarea id="engNote" class="w-full border-2 border-yellow-200 rounded-xl p-3 text-sm h-24 resize-none focus:outline-none focus:border-orange-400" placeholder="写下今天学到的单词..."></textarea>
+    <button onclick="saveNote('engNote')" class="btn-primary px-4 py-2 mt-2 text-sm font-bold float-right">💾 保存</button>
+  </div>
+</div>
+
+<!-- ==================== 预习复习 ==================== -->
+<div id="page-preview" class="page px-4 pt-4">
+  <div class="flex items-center mb-4">
+    <button onclick="showPage('page-home')" class="text-2xl mr-2">←</button>
+    <div class="text-xl font-bold text-gray-800">📚 预习复习打卡</div>
+  </div>
+
+  <div class="card p-4 mb-4">
+    <div class="flex items-center gap-2 mb-3">
+      <button onclick="changeMonth(-1)" class="text-xl">◀</button>
+      <div class="font-bold text-gray-800" id="pvMonth">2026年11月</div>
+      <button onclick="changeMonth(1)" class="text-xl">▶</button>
+    </div>
+    <div class="grid grid-cols-7 gap-1 text-center text-xs font-bold text-gray-500 mb-1">
+      <div>日期</div><div>语文预</div><div>语文复</div><div>数学预</div><div>数学复</div><div>英语预</div><div>英语复</div>
+    </div>
+    <div id="pvTable" class="space-y-1">
+      <!-- 动态生成 -->
+    </div>
+  </div>
+
+  <div class="card p-4">
+    <div class="font-bold text-gray-800 mb-3">📌 今日快速打卡</div>
+    <div class="grid grid-cols-2 gap-3">
+      <button onclick="quickPV('chinese_pre')" class="btn-green py-3 font-bold">📖 语文预习 +3</button>
+      <button onclick="quickPV('chinese_rev')" class="btn-green py-3 font-bold">📖 语文复习 +2</button>
+      <button onclick="quickPV('math_pre')" class="btn-primary py-3 font-bold">🔢 数学预习 +3</button>
+      <button onclick="quickPV('math_rev')" class="btn-primary py-3 font-bold">🔢 数学复习 +2</button>
+      <button onclick="quickPV('english_pre')" class="btn-blue py-3 font-bold">🔤 英语预习 +3</button>
+      <button onclick="quickPV('english_rev')" class="btn-blue py-3 font-bold">🔤 英语复习 +2</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 自律日计划 ==================== -->
+<div id="page-daily" class="page px-4 pt-4">
+  <div class="flex items-center mb-4">
+    <button onclick="showPage('page-home')" class="text-2xl mr-2">←</button>
+    <div class="text-xl font-bold text-gray-800">📅 自律日计划</div>
+  </div>
+
+  <div class="card p-4 mb-4">
+    <div class="flex justify-between items-center mb-3">
+      <div class="font-bold text-gray-800" id="dailyDate">今日计划</div>
+      <button onclick="saveDaily()" class="btn-primary px-4 py-2 text-sm font-bold">💾 保存</button>
+    </div>
+    <!-- 学科计划 -->
+    <div class="space-y-3" id="dailyPlans">
+      <!-- 动态生成学科计划 -->
+    </div>
+  </div>
+
+  <div class="card p-4 mb-4">
+    <div class="font-bold text-gray-800 mb-3">⏱️ 今日学习时长</div>
+    <div class="grid grid-cols-6 gap-2 text-center text-xs" id="timeSelector">
+      <!-- 动态生成时长选项 -->
+    </div>
+  </div>
+
+  <div class="card p-4">
+    <div class="font-bold text-gray-800 mb-3">⭐ 自我评价</div>
+    <div class="grid grid-cols-5 gap-2" id="selfEval">
+      <!-- 动态生成 -->
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 小约定 ==================== -->
+<div id="page-rules" class="page px-4 pt-4">
+  <div class="flex items-center mb-4">
+    <button onclick="showPage('page-home')" class="text-2xl mr-2">←</button>
+    <div class="text-xl font-bold text-gray-800">📋 好习惯小约定</div>
+  </div>
+
+  <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+    <button class="tab-btn active whitespace-nowrap" onclick="showRule(this,'homework')">✏️ 做作业</button>
+    <button class="tab-btn whitespace-nowrap" onclick="showRule(this,'math')">🔢 做数学</button>
+    <button class="tab-btn whitespace-nowrap" onclick="showRule(this,'reading')">📖 课外阅读</button>
+  </div>
+
+  <!-- 做作业约定 -->
+  <div id="rule-homework" class="card p-4 space-y-3">
+    <div class="font-bold text-center text-lg text-orange-600 mb-2">✏️ 做作业小约定</div>
+    <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
+      <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">1</div>
+      <div class="text-gray-700">坐到学习桌前，喝水、上厕所、抠鼻屎问题先全部解决。</div>
+    </div>
+    <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
+      <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">2</div>
+      <div class="text-gray-700">闹铃一响，准时写作业。</div>
+    </div>
+    <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
+      <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">3</div>
+      <div class="text-gray-700">准备今日作业、铅笔、橡皮擦。</div>
+    </div>
+    <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
+      <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">4</div>
+      <div class="text-gray-700">写字要求：可以慢一点，"做作业"要横平竖直不出格。</div>
+    </div>
+    <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
+      <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">5</div>
+      <div class="text-gray-700">做题前要读题，读出声，不漏字。</div>
+    </div>
+    <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
+      <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">6</div>
+      <div class="text-gray-700">不会做的留下来做 → 下一个。</div>
+    </div>
+    <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
+      <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">7</div>
+      <div class="text-gray-700">学习时不说话，不随意离开书桌。</div>
+    </div>
+    <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
+      <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">8</div>
+      <div class="text-gray-700">做完作业检查完放到一边，妈妈检查签字。</div>
+    </div>
+    <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
+      <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">9</div>
+      <div class="text-gray-700">坐姿端正，不趴下。</div>
+    </div>
+    <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
+      <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">10</div>
+      <div class="text-gray-700">作业结束后，整理书桌，东西归位关灯。</div>
+    </div>
+  </div>
+
+  <!-- 数学约定 -->
+  <div id="rule-math" class="page">
+    <div class="card p-4 space-y-3">
+      <div class="font-bold text-center text-lg text-blue-600 mb-2">🔢 做数学题小约定</div>
+      <div class="bg-blue-50 rounded-2xl p-4 text-center">
+        <div class="text-5xl font-bold text-blue-500 mb-3">读</div>
+        <div class="font-bold text-gray-800 mb-1">1. 仔细读题</div>
+        <div class="text-sm text-gray-600">不漏字，不加字<br>不明白的多读2遍</div>
+      </div>
+      <div class="bg-blue-50 rounded-2xl p-4 text-center">
+        <div class="text-5xl font-bold text-blue-500 mb-3">标</div>
+        <div class="font-bold text-gray-800 mb-1">2. 标出关键词</div>
+        <div class="text-sm text-gray-600">如数量关系、问题<br>有图结合图片想问题</div>
+      </div>
+      <div class="bg-blue-50 rounded-2xl p-4 text-center">
+        <div class="text-5xl font-bold text-blue-500 mb-3">思</div>
+        <div class="font-bold text-gray-800 mb-1">3. 认真思考</div>
+        <div class="text-sm text-gray-600">若需草稿纸<br>可在草稿纸上进行练习</div>
+      </div>
+      <div class="bg-blue-50 rounded-2xl p-4 text-center">
+        <div class="text-5xl font-bold text-blue-500 mb-3">查</div>
+        <div class="font-bold text-gray-800 mb-1">4. 书面检查</div>
+        <div class="text-sm text-gray-600">做完后要检查<br>避免错题、漏题</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 课外阅读约定 -->
+  <div id="rule-reading" class="page">
+    <div class="card p-4 space-y-3">
+      <div class="font-bold text-center text-lg text-green-600 mb-2">📖 课外阅读小约定</div>
+      <div class="bg-green-50 rounded-2xl p-4">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-green-400 text-white rounded-full flex items-center justify-center font-bold text-lg">1</div>
+          <div class="font-bold text-gray-800">指读文章</div>
+        </div>
+        <div class="text-sm text-gray-600 ml-13">保证不漏字，不加字，不跳行</div>
+      </div>
+      <div class="bg-green-50 rounded-2xl p-4">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-green-400 text-white rounded-full flex items-center justify-center font-bold text-lg">2</div>
+          <div class="font-bold text-gray-800">有感情地阅读</div>
+        </div>
+        <div class="text-sm text-gray-600 ml-13">语速慢一些，嘴巴张开<br>吐字清楚不磕巴</div>
+      </div>
+      <div class="bg-green-50 rounded-2xl p-4">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 bg-green-400 text-white rounded-full flex items-center justify-center font-bold text-lg">3</div>
+          <div class="font-bold text-gray-800">总结文章</div>
+        </div>
+        <div class="text-sm text-gray-600 ml-13">简单总结时间、地点、人物<br>经过和结果</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 设置 ==================== -->
+<div id="page-settings" class="page px-4 pt-4">
+  <div class="flex items-center mb-4">
+    <button onclick="showPage('page-home')" class="text-2xl mr-2">←</button>
+    <div class="text-xl font-bold text-gray-800">⚙️ 设置</div>
+  </div>
+
+  <div class="card p-4 space-y-3">
+    <div>
+      <label class="text-sm text-gray-600 block mb-1">小朋友昵称</label>
+      <input id="inputName" class="w-full border-2 border-yellow-200 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-400" placeholder="请输入昵称">
+    </div>
+    <button onclick="saveSettings()" class="btn-primary w-full py-3 font-bold">💾 保存设置</button>
+  </div>
+
+  <div class="card p-4 mt-4">
+    <div class="font-bold text-gray-800 mb-3">⚠️ 危险操作</div>
+    <button onclick="exportData()" class="btn-green w-full py-3 font-bold mb-2">📤 导出数据（备份）</button>
+    <button onclick="importData()" class="btn-blue w-full py-3 font-bold mb-2">📥 导入数据</button>
+    <button onclick="resetData()" class="w-full py-3 font-bold bg-red-100 text-red-500 rounded-xl border-2 border-red-200">🗑️ 重置所有数据</button>
+  </div>
+</div>
+
+<!-- ==================== 底部导航 ==================== -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-yellow-200 px-2 py-2" style="z-index:50;">
+  <div class="grid grid-cols-5 text-center">
+    <button onclick="showPage('page-home')" class="nav-item active flex flex-col items-center py-1" data-nav="home">
+      <div class="text-2xl">🏠</div>
+      <div class="text-xs font-bold">首页</div>
+    </button>
+    <button onclick="showPage('page-rewards')" class="nav-item flex flex-col items-center py-1" data-nav="rewards">
+      <div class="text-2xl">🎁</div>
+      <div class="text-xs font-bold">兑换</div>
+    </button>
+    <button onclick="showPage('page-rules')" class="nav-item flex flex-col items-center py-1" data-nav="rules">
+      <div class="text-2xl">📋</div>
+      <div class="text-xs font-bold">约定</div>
+    </button>
+    <button onclick="showPage('page-history')" class="nav-item flex flex-col items-center py-1" data-nav="history">
+      <div class="text-2xl">📊</div>
+      <div class="text-xs font-bold">记录</div>
+    </button>
+    <button onclick="showPage('page-settings')" class="nav-item flex flex-col items-center py-1" data-nav="settings">
+      <div class="text-2xl">⚙️</div>
+      <div class="text-xs font-bold">设置</div>
+    </button>
+  </div>
+</nav>
+
+<!-- ==================== 加减积分弹窗 ==================== -->
+<div id="scoreModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <div class="flex justify-between items-center mb-4">
+      <div class="text-xl font-bold text-gray-800" id="scoreModalTitle">加分</div>
+      <button onclick="closeScoreModal()" class="text-2xl text-gray-400">×</button>
+    </div>
+    <div id="scoreOptions" class="grid grid-cols-2 gap-2">
+      <!-- 动态生成 -->
+    </div>
+    <div class="mt-4 pt-4 border-t-2 border-gray-100">
+      <div class="text-sm text-gray-600 mb-2">自定义积分：</div>
+      <div class="flex gap-2">
+        <input id="customScore" type="number" class="flex-1 border-2 border-yellow-200 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-400" placeholder="输入分数">
+        <input id="customReason" class="flex-1 border-2 border-yellow-200 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-400" placeholder="原因">
+      </div>
+      <button onclick="customScore()" class="btn-primary w-full py-3 mt-3 font-bold">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast提示 -->
+<div id="toast" class="fixed top-1/3 left-1/2 -translate-x-1/2 bg-black/80 text-white px-6 py-3 rounded-full text-sm font-bold z-[200]" style="display:none;"></div>
+
+<script>
+// ==================== 数据存储 ====================
+const STORAGE_KEY = 'family_score_app_v1';
+let DB = {
+  name: '小朋友',
+  totalScore: 0,
+  records: [],      // {id, type:'add'/'minus', score, reason, date, time}
+  morningCheck: {},  // {date: true}
+  eveningCheck: {},
+  engListen: {},
+  engWrite: {},
+  engNotes: {},
+  pvCheck: {},       // {date: {chinese_pre:true, ...}}
+  dailyPlan: {},     // {date: {subjects:[{name, items:[]}], time, eval:{完成:0,专注:0,...}}}
+  currentMonth: new Date().getMonth() + 1,
+};
+
+function loadDB() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try { DB = Object.assign(DB, JSON.parse(saved)); } catch(e) {}
+  }
+}
+function saveDB() { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }
+function today() { return new Date().toISOString().slice(0,10); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2000);
+}
+
+// ==================== 加分扣分项目 ====================
+const ADD_OPTIONS = [
+  // 学习习惯
+  {score:2, reason:'认真完成各科作业', cat:'学习习惯'},
+  {score:2, reason:'复习今日所学内容', cat:'学习习惯'},
+  {score:3, reason:'预习明日要学课程', cat:'学习习惯'},
+  {score:2, reason:'每日练字15分钟', cat:'学习习惯'},
+  {score:2, reason:'坐姿/握笔姿势标准', cat:'学习习惯'},
+  {score:5, reason:'课外阅读30分钟', cat:'学习习惯'},
+  {score:5, reason:'学习不无故离开座位', cat:'学习习惯'},
+  // 学习科目
+  {score:2, reason:'口算题50道', cat:'学习科目'},
+  {score:3, reason:'阅读理解1篇', cat:'学习科目'},
+  {score:5, reason:'看图写话1篇', cat:'学习科目'},
+  {score:5, reason:'听力1篇', cat:'学习科目'},
+  {score:3, reason:'摘抄好词好句30个', cat:'学习科目'},
+  // 学习成绩
+  {score:2, reason:'单元测试95分以上', cat:'学习成绩'},
+  {score:3, reason:'获得学校奖状', cat:'学习成绩'},
+  {score:5, reason:'课堂听写/默写满分', cat:'学习成绩'},
+  {score:5, reason:'被老师表扬', cat:'学习成绩'},
+  // 生活习惯
+  {score:2, reason:'主动洗漱', cat:'生活习惯'},
+  {score:1, reason:'整理书包/书桌', cat:'生活习惯'},
+  {score:1, reason:'吃饭认真不挑食', cat:'生活习惯'},
+  {score:1, reason:'吃饭不超过20分钟', cat:'生活习惯'},
+  {score:2, reason:'按时睡觉/起床', cat:'生活习惯'},
+  {score:2, reason:'主动做家务', cat:'生活习惯'},
+  {score:2, reason:'照顾弟弟妹妹', cat:'生活习惯'},
+  {score:3, reason:'每日运动30分钟', cat:'生活习惯'},
+  // 性格养成
+  {score:3, reason:'一天不发脾气', cat:'性格养成'},
+  {score:2, reason:'主动和认识的人打招呼', cat:'性格养成'},
+  {score:2, reason:'公共场合不大声喧哗', cat:'性格养成'},
+  {score:3, reason:'尊敬长辈不顶嘴', cat:'性格养成'},
+  {score:5, reason:'遇到难题想办法解决', cat:'性格养成'},
+  {score:5, reason:'遇到问题不哭', cat:'性格养成'},
+];
+
+const MINUS_OPTIONS = [
+  {score:5, reason:'不认真完成各科作业', cat:'学习习惯'},
+  {score:1, reason:'没有复习今日所学', cat:'学习习惯'},
+  {score:2, reason:'没有预习明日课程', cat:'学习习惯'},
+  {score:1, reason:'没有进行每日练字', cat:'学习习惯'},
+  {score:2, reason:'坐姿/握笔姿势不标准', cat:'学习习惯'},
+  {score:2, reason:'没有进行课外阅读', cat:'学习习惯'},
+  {score:5, reason:'做作业好动不认真', cat:'学习习惯'},
+  {score:2, reason:'不主动洗漱', cat:'生活习惯'},
+  {score:1, reason:'不主动整理书包/书桌', cat:'生活习惯'},
+  {score:2, reason:'吃饭不认真/挑食', cat:'生活习惯'},
+  {score:1, reason:'吃饭超过30分钟', cat:'生活习惯'},
+  {score:1, reason:'睡觉/起床拖拉磨蹭', cat:'生活习惯'},
+  {score:3, reason:'乱扔东西/垃圾', cat:'生活习惯'},
+  {score:3, reason:'不尊敬长辈', cat:'生活习惯'},
+  {score:3, reason:'没完成运动任务', cat:'生活习惯'},
+  {score:3, reason:'乱发脾气', cat:'性格养成'},
+  {score:5, reason:'和长辈顶嘴', cat:'性格养成'},
+  {score:5, reason:'说脏话', cat:'性格养成'},
+  {score:3, reason:'无故哭闹', cat:'性格养成'},
+  {score:10, reason:'撒谎屡教不改', cat:'性格养成'},
+];
+
+const REWARDS = [
+  {score:50, name:'外出吃饭', emoji:'🍽️'},
+  {score:50, name:'买零食(20元以内)', emoji:'🍬'},
+  {score:50, name:'文具盲盒一个', emoji:'📦'},
+  {score:100, name:'玩手机/电脑15分钟', emoji:'📱'},
+  {score:100, name:'自由支配周末半天', emoji:'🎈'},
+  {score:100, name:'买零食(50元以内)', emoji:'🍭'},
+  {score:100, name:'周末出游决定权一次', emoji:'🗺️'},
+  {score:150, name:'满足一个心愿', emoji:'🧞'},
+  {score:150, name:'自由支配周末一天', emoji:'🌈'},
+  {score:150, name:'吃大餐', emoji:'🍰'},
+  {score:200, name:'自由支配周末', emoji:'🎁'},
+  {score:200, name:'出远门旅游一次', emoji:'✈️'},
+];
+
+// ==================== 页面切换 ====================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.nav === id.replace('page-',''));
+  });
+  if (id === 'page-home') renderHome();
+  if (id === 'page-history') renderHistory();
+  if (id === 'page-rewards') renderRewards();
+  if (id === 'page-morning') renderMW();
+  if (id === 'page-english') renderEnglish();
+  if (id === 'page-preview') renderPV();
+  if (id === 'page-daily') renderDaily();
+}
+
+// ==================== 首页渲染 ====================
+function renderHome() {
+  document.getElementById('childName').textContent = DB.name;
+  const h = new Date().getHours();
+  document.getElementById('greeting').textContent = h < 6 ? '🌙 夜深了' : h < 11 ? '☀️ 早上好！' : h < 14 ? '🍱 中午好！' : h < 18 ? '🌤️ 下午好！' : '🌆 晚上好！';
+  document.getElementById('totalScore').textContent = DB.totalScore;
+  
+  // 本周积分
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay());
+  const weekStartStr = weekStart.toISOString().slice(0,10);
+  const weekScore = DB.records.filter(r => r.date >= weekStartStr && r.type === 'add').reduce((s,r)=>s+r.score,0)
+                 - DB.records.filter(r => r.date >= weekStartStr && r.type === 'minus').reduce((s,r)=>s+r.score,0);
+  document.getElementById('weekScore').textContent = weekScore;
+  
+  // 连续打卡天数
+  document.getElementById('streak').textContent = calcStreak();
+  
+  // 今日任务
+  renderTodayTasks();
+  
+  // 最近记录
+  renderRecentRecords();
+}
+
+function calcStreak() {
+  let streak = 0;
+  const d = new Date();
+  while (true) {
+    const dateStr = d.toISOString().slice(0,10);
+    const hasCheck = DB.morningCheck[dateStr] || DB.eveningCheck[dateStr] || DB.engListen[dateStr] || DB.pvCheck[dateStr];
+    if (hasCheck) { streak++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+
+function renderTodayTasks() {
+  const d = today();
+  const tasks = [
+    {key:'morning', emoji:'🌅', name:'早读', done:!!DB.morningCheck[d], action:"showPage('page-morning')"},
+    {key:'evening', emoji:'🌙', name:'晚背', done:!!DB.eveningCheck[d], action:"showPage('page-morning')"},
+    {key:'eng', emoji:'📝', name:'英语', done:!!DB.engListen[d] && !!DB.engWrite[d], action:"showPage('page-english')"},
+    {key:'pv', emoji:'📚', name:'预习复习', done:!!DB.pvCheck[d], action:"showPage('page-preview')"},
+    {key:'daily', emoji:'📅', name:'自律计划', done:!!DB.dailyPlan[d], action:"showPage('page-daily')"},
+    {key:'rule', emoji:'✨', name:'好习惯', done:false, action:"showPage('page-rules')"},
+  ];
+  document.getElementById('todayTasks').innerHTML = tasks.map(t => `
+    <button onclick="${t.action}" class="rounded-2xl p-3 text-center transition active:scale-95 ${t.done ? 'bg-green-100 border-2 border-green-300' : 'bg-gray-50 border-2 border-gray-100'}">
+      <div class="text-2xl">${t.done ? '✅' : t.emoji}</div>
+      <div class="text-xs mt-1 font-bold ${t.done ? 'text-green-600' : 'text-gray-600'}">${t.name}</div>
+    </button>
+  `).join('');
+  document.getElementById('todayDone').textContent = tasks.filter(t=>t.done).length;
+  document.getElementById('todayTotal').textContent = tasks.length;
+}
+
+function renderRecentRecords() {
+  const list = DB.records.slice(-5).reverse();
+  if (list.length === 0) {
+    document.getElementById('recentRecords').innerHTML = '<div class="text-center text-gray-400 py-6">还没有积分记录，开始吧！ 💪</div>';
+    return;
+  }
+  document.getElementById('recentRecords').innerHTML = list.map(r => `
+    <div class="flex items-center justify-between p-2 rounded-xl ${r.type==='add'?'bg-green-50':'bg-red-50'}">
+      <div>
+        <div class="text-sm font-bold text-gray-700">${r.reason}</div>
+        <div class="text-xs text-gray-400">${r.date} ${r.time}</div>
+      </div>
+      <div class="font-bold ${r.type==='add'?'text-green-600':'text-red-500'}">${r.type==='add'?'+':'-'}${r.score}</div>
+    </div>
+  `).join('');
+}
+
+// ==================== 加减积分弹窗 ====================
+let modalType = 'add';
+function openScoreModal(type) {
+  modalType = type;
+  document.getElementById('scoreModalTitle').textContent = type==='add' ? '➕ 加分项目' : '➖ 扣分项目';
+  const options = type==='add' ? ADD_OPTIONS : MINUS_OPTIONS;
+  // 按分类分组显示常用项
+  const byCat = {};
+  options.forEach(o => { (byCat[o.cat]=byCat[o.cat]||[]).push(o); });
+  let html = '';
+  Object.keys(byCat).forEach(cat => {
+    html += `<div class="col-span-2 text-xs font-bold text-gray-500 mt-2">${cat}</div>`;
+    byCat[cat].forEach(o => {
+      const color = type==='add' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700';
+      html += `<button onclick="addScore(${o.score},'${o.reason.replace(/'/g,"\\'")}')" class="p-2 rounded-xl border-2 ${color} text-xs active:scale-95">${o.reason}<br><b>${type==='add'?'+':'-'}${o.score}分</b></button>`;
+    });
+  });
+  document.getElementById('scoreOptions').innerHTML = html;
+  document.getElementById('scoreModal').style.display = 'flex';
+}
+function closeScoreModal() { document.getElementById('scoreModal').style.display = 'none'; }
+
+function addScore(score, reason) {
+  const now = new Date();
+  const record = {
+    id: Date.now(),
+    type: modalType,
+    score,
+    reason,
+    date: now.toISOString().slice(0,10),
+    time: now.toTimeString().slice(0,5),
+  };
+  DB.records.push(record);
+  DB.totalScore += modalType==='add' ? score : -score;
+  saveDB();
+  closeScoreModal();
+  showToast(`${modalType==='add'?'➕':'➖'} ${modalType==='add'?'+':'-'}${score}分 - ${reason}`);
+  renderHome();
+}
+
+function customScore() {
+  const score = parseInt(document.getElementById('customScore').value);
+  const reason = document.getElementById('customReason').value || '自定义';
+  if (!score) { showToast('请输入有效分数'); return; }
+  addScore(Math.abs(score), reason);
+}
+
+// ==================== 历史记录 ====================
+let historyFilter = 'all';
+function filterHistory(btn, filter) {
+  historyFilter = filter;
+  document.querySelectorAll('#page-history .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderHistory();
+}
+function renderHistory() {
+  let list = DB.records.slice().reverse();
+  if (historyFilter !== 'all') list = list.filter(r => r.type === historyFilter);
+  if (list.length === 0) {
+    document.getElementById('historyList').innerHTML = '<div class="text-center text-gray-400 py-10">暂无记录</div>';
+    return;
+  }
+  // 按日期分组
+  const groups = {};
+  list.forEach(r => { (groups[r.date]=groups[r.date]||[]).push(r); });
+  let html = '';
+  Object.keys(groups).sort().reverse().forEach(date => {
+    const dayAdd = groups[date].filter(r=>r.type==='add').reduce((s,r)=>s+r.score,0);
+    const dayMinus = groups[date].filter(r=>r.type==='minus').reduce((s,r)=>s+r.score,0);
+    html += `<div class="text-xs font-bold text-gray-500 mt-3 mb-1">${date} <span class="text-green-600">+${dayAdd}</span> <span class="text-red-500">-${dayMinus}</span> <span class="text-orange-500">=${dayAdd-dayMinus}</span></div>`;
+    groups[date].forEach(r => {
+      html += `
+        <div class="flex items-center justify-between p-3 rounded-xl ${r.type==='add'?'bg-green-50':'bg-red-50'} mb-2">
+          <div>
+            <div class="text-sm font-bold text-gray-700">${r.reason}</div>
+            <div class="text-xs text-gray-400">${r.time}</div>
+          </div>
+          <div class="font-bold ${r.type==='add'?'text-green-600':'text-red-500'} text-lg">${r.type==='add'?'+':'-'}${r.score}</div>
+        </div>`;
+    });
+  });
+  document.getElementById('historyList').innerHTML = html;
+}
+
+// ==================== 兑换奖励 ====================
+function renderRewards() {
+  document.getElementById('rewardScore').textContent = DB.totalScore;
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay());
+  const ws = weekStart.toISOString().slice(0,10);
+  document.getElementById('weekEarn').textContent = DB.records.filter(r=>r.date>=ws&&r.type==='add').reduce((s,r)=>s+r.score,0);
+  document.getElementById('weekSpend').textContent = DB.records.filter(r=>r.date>=ws&&r.type==='minus').reduce((s,r)=>s+r.score,0);
+  
+  // 按分数分组
+  const groups = {};
+  REWARDS.forEach(r => { (groups[r.score]=groups[r.score]||[]).push(r); });
+  let html = '';
+  Object.keys(groups).sort((a,b)=>a-b).forEach(score => {
+    const canRedeem = DB.totalScore >= score;
+    html += `<div class="card p-4 mb-3 ${canRedeem?'border-yellow-300':'border-gray-200 opacity-60'}">`;
+    html += `<div class="flex items-center justify-between mb-3">
+      <div class="text-lg font-bold text-orange-500">💰 ${score}分</div>
+      <div class="text-sm ${canRedeem?'text-green-500':'text-gray-400'}">${canRedeem?'✅ 可兑换':'❌ 积分不足'}</div>
+    </div>`;
+    html += `<div class="grid grid-cols-2 gap-2">`;
+    groups[score].forEach(r => {
+      html += `<button onclick="redeemReward(${score},'${r.name}')" class="p-3 rounded-xl ${canRedeem?'bg-gradient-to-br from-yellow-50 to-orange-50 hover:from-yellow-100 hover:to-orange-100':'bg-gray-50'} text-center border-2 ${canRedeem?'border-yellow-200':'border-gray-200'} transition">
+        <div class="text-3xl">${r.emoji}</div>
+        <div class="text-sm font-bold text-gray-700 mt-1">${r.name}</div>
+      </button>`;
+    });
+    html += `</div></div>`;
+  });
+  document.getElementById('rewardList').innerHTML = html;
+}
+
+function redeemReward(score, name) {
+  if (DB.totalScore < score) { showToast('积分不足哦！💪'); return; }
+  if (!confirm(`确定用 ${score} 分兑换「${name}」吗？`)) return;
+  addScore(score, `兑换奖励：${name}`);
+}
+
+// ==================== 早读晚背 ====================
+let mwMode = 'morning';
+function showMW(btn, mode) {
+  mwMode = mode;
+  document.querySelectorAll('#page-morning .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMW();
+}
+
+function renderMW() {
+  const d = new Date();
+  const year = d.getFullYear(), month = d.getMonth();
+  document.getElementById('mwMonth')?.remove();
+  
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  
+  let html = '<div class="col-span-7 text-sm font-bold text-gray-600 mb-1">周日 一 二 三 四 五 六</div>';
+  for (let i=0;i<firstDay;i++) html += '<div></div>';
+  const todayStr = today();
+  for (let i=1;i<=daysInMonth;i++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+    const done = mwMode==='morning' ? DB.morningCheck[dateStr] : DB.eveningCheck[dateStr];
+    const isToday = dateStr === todayStr;
+    html += `<div class="aspect-square flex flex-col items-center justify-center rounded-lg text-xs ${isToday?'ring-2 ring-orange-400':''} ${done?'bg-green-100 text-green-600 font-bold':'bg-gray-50 text-gray-400'}">
+      <div>${i}</div>
+      <div>${done?'✅':'·'}</div>
+    </div>`;
+  }
+  document.getElementById('mwCalendar').innerHTML = html;
+}
+
+function checkMW() {
+  const d = today();
+  const key = mwMode==='morning' ? 'morningCheck' : 'eveningCheck';
+  const label = mwMode==='morning' ? '早读' : '晚背';
+  if (DB[key][d]) { showToast('今天已经打卡过了！🌟'); return; }
+  DB[key][d] = true;
+  addScore(3, `${label}打卡`);
+  // 触发加分后刷新
+  renderMW();
+  renderHome();
+}
+
+// ==================== 英语单词 ====================
+function renderEnglish() {
+  const d = new Date();
+  document.getElementById('engMonth').textContent = `${d.getFullYear()}年${DB.currentMonth}月`;
+  
+  // 月份切换
+  const firstDay = new Date(d.getFullYear(), DB.currentMonth-1, 1).getDay();
+  const daysInMonth = new Date(d.getFullYear(), DB.currentMonth, 0).getDate();
+  const todayStr = today();
+  
+  let html = '';
+  for (let i=1;i<=7;i++) html += `<div class="text-xs text-gray-400 font-bold">${['日','一','二','三','四','五','六'][i-1]}</div>`;
+  for (let i=0;i<firstDay;i++) html += '<div></div>';
+  for (let i=1;i<=daysInMonth;i++) {
+    const dateStr = `${d.getFullYear()}-${String(DB.currentMonth).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+    const listen = DB.engListen[dateStr], write = DB.engWrite[dateStr];
+    const done = listen && write;
+    const isToday = dateStr === todayStr;
+    html += `<div class="aspect-square flex flex-col items-center justify-center rounded-lg text-xs ${isToday?'ring-2 ring-orange-400':''} ${done?'bg-green-100':'bg-gray-50'}">
+      <div class="${done?'text-green-600 font-bold':'text-gray-400'}">${i}</div>
+      <div class="text-[10px]">${done?'✅':(listen?'🔊':'')}${write?'✍️':''}</div>
+    </div>`;
+  }
+  document.getElementById('engCalendar').innerHTML = html;
+  
+  const done = DB.engListen[todayStr] && DB.engWrite[todayStr];
+  document.getElementById('engToday').textContent = done ? 2 : (DB.engListen[todayStr] || DB.engWrite[todayStr] ? 1 : 0);
+  document.getElementById('engListenStatus').textContent = DB.engListen[todayStr] ? '✅ 已完成' : '未完成';
+  document.getElementById('engWriteStatus').textContent = DB.engWrite[todayStr] ? '✅ 已完成' : '未完成';
+  
+  // 加载今日笔记
+  document.getElementById('engNote').value = DB.engNotes[todayStr] || '';
+}
+
+function checkEN(type) {
+  const d = today();
+  const label = type==='listen' ? '英语听写' : '英语默写';
+  if (DB['eng'+(type==='listen'?'Listen':'Write')][d]) { showToast('已经打卡过了！🌟'); return; }
+  DB['eng'+(type==='listen'?'Listen':'Write')][d] = true;
+  // 如果两个都完成了，额外加积分
+  const other = type==='listen' ? DB.engWrite[d] : DB.engListen[d];
+  if (other) {
+    addScore(3, `${label}（全部完成）`);
+  } else {
+    addScore(1, `${label}打卡`);
+  }
+  renderEnglish();
+}
+
+function saveNote(id) {
+  DB.engNotes[today()] = document.getElementById(id).value;
+  saveDB();
+  showToast('📒 笔记已保存！');
+}
+
+// ==================== 预习复习 ====================
+let pvMonthOffset = 0;
+function changeMonth(delta) {
+  pvMonthOffset += delta;
+  DB.currentMonth = (DB.currentMonth - 1 + delta + 12) % 12 + 1;
+  if (DB.currentMonth === 12 && delta > 0) DB.currentMonth = 12; // 简化处理
+  saveDB();
+  renderPV();
+}
+
+function renderPV() {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = DB.currentMonth;
+  document.getElementById('pvMonth').textContent = `${year}年${month}月`;
+  
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const todayStr = today();
+  
+  let html = '';
+  for (let i=1;i<=daysInMonth;i++) {
+    const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+    const c = DB.pvCheck[dateStr] || {};
+    const isToday = dateStr === todayStr;
+    const cell = (checked, color) => `<button onclick="togglePV('${dateStr}','${Object.keys({chinese_pre:1,chinese_rev:2,math_pre:3,math_rev:4,english_pre:5,english_rev:6})[checked]}')" class="w-7 h-7 rounded-lg text-xs ${c[checked]?'bg-'+color+'/30 text-white font-bold':'bg-gray-100 text-gray-400'}" data-pv="${dateStr}" data-key="${checked}">${c[checked]?'✓':i<1?'':''}</button>`;
+    
+    const rowColor = isToday ? 'ring-2 ring-orange-300 bg-orange-50' : '';
+    const cellBg = (checked) => c[checked] ? 'bg-green-400' : 'bg-gray-200';
+    
+    html += `<div class="grid grid-cols-7 gap-1 items-center p-1 rounded-lg ${rowColor}">
+      <div class="text-center text-xs font-bold ${isToday?'text-orange-600':'text-gray-600'}">${i}</div>
+      <div class="flex justify-center"><button onclick="togglePV('${dateStr}','chinese_pre')" class="w-6 h-6 rounded text-xs text-white ${cellBg('chinese_pre')}">${c.chinese_pre?'✓':''}</button></div>
+      <div class="flex justify-center"><button onclick="togglePV('${dateStr}','chinese_rev')" class="w-6 h-6 rounded text-xs text-white ${cellBg('chinese_rev')}">${c.chinese_rev?'✓':''}</button></div>
+      <div class="flex justify-center"><button onclick="togglePV('${dateStr}','math_pre')" class="w-6 h-6 rounded text-xs text-white ${cellBg('math_pre')}">${c.math_pre?'✓':''}</button></div>
+      <div class="flex justify-center"><button onclick="togglePV('${dateStr}','math_rev')" class="w-6 h-6 rounded text-xs text-white ${cellBg('math_rev')}">${c.math_rev?'✓':''}</button></div>
+      <div class="flex justify-center"><button onclick="togglePV('${dateStr}','english_pre')" class="w-6 h-6 rounded text-xs text-white ${cellBg('english_pre')}">${c.english_pre?'✓':''}</button></div>
+      <div class="flex justify-center"><button onclick="togglePV('${dateStr}','english_rev')" class="w-6 h-6 rounded text-xs text-white ${cellBg('english_rev')}">${c.english_rev?'✓':''}</button></div>
+    </div>`;
+  }
+  document.getElementById('pvTable').innerHTML = html;
+}
+
+function togglePV(dateStr, key) {
+  if (!DB.pvCheck[dateStr]) DB.pvCheck[dateStr] = {};
+  if (DB.pvCheck[dateStr][key]) {
+    delete DB.pvCheck[dateStr][key];
+  } else {
+    DB.pvCheck[dateStr][key] = true;
+  }
+  saveDB();
+  renderPV();
+  renderHome();
+}
+
+function quickPV(key) {
+  const d = today();
+  if (!DB.pvCheck[d]) DB.pvCheck[d] = {};
+  if (DB.pvCheck[d][key]) { showToast('今日已打卡过了！🌟'); return; }
+  DB.pvCheck[d][key] = true;
+  const labels = {
+    chinese_pre:'语文预习', chinese_rev:'语文复习',
+    math_pre:'数学预习', math_rev:'数学复习',
+    english_pre:'英语预习', english_rev:'英语复习'
+  };
+  const scores = {chinese_pre:3, chinese_rev:2, math_pre:3, math_rev:2, english_pre:3, english_rev:2};
+  addScore(scores[key], labels[key]);
+  renderPV();
+}
+
+// ==================== 自律日计划 ====================
+function renderDaily() {
+  const d = today();
+  document.getElementById('dailyDate').textContent = new Date().toLocaleDateString('zh-CN', {month:'long', day:'numeric', weekday:'long'});
+  
+  if (!DB.dailyPlan[d]) {
+    DB.dailyPlan[d] = {
+      subjects: [
+        {name:'语文', emoji:'📖', items:['', '', '', '', '']},
+        {name:'数学', emoji:'🔢', items:['', '', '', '', '']},
+        {name:'英语', emoji:'🔤', items:['', '', '', '', '']},
+        {name:'其他', emoji:'✨', items:['', '', '', '', '']},
+      ],
+      time: 0,
+      eval: {完成:0, 专注:0, 准时:0, 效率:0, 正确:0},
+    };
+  }
+  const plan = DB.dailyPlan[d];
+  
+  let html = '';
+  plan.subjects.forEach((sub, si) => {
+    html += `<div class="mb-3">
+      <div class="font-bold text-gray-700 mb-2">${sub.emoji} ${sub.name}</div>
+      <div class="space-y-1">`;
+    sub.items.forEach((item, ii) => {
+      html += `<div class="flex items-center gap-2">
+        <span class="text-xs text-gray-400 w-4">${ii+1}.</span>
+        <input class="daily-item flex-1 border-b-2 border-gray-200 py-1 text-sm focus:outline-none focus:border-orange-400 bg-transparent" 
+               data-sub="${si}" data-idx="${ii}" value="${item}" placeholder="任务${ii+1}">
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  document.getElementById('dailyPlans').innerHTML = html;
+  
+  // 绑定输入事件
+  document.querySelectorAll('.daily-item').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const sub = parseInt(e.target.dataset.sub);
+      const idx = parseInt(e.target.dataset.idx);
+      plan.subjects[sub].items[idx] = e.target.value;
+    });
+  });
+  
+  // 时长选择
+  const times = [0,10,20,30,40,50,'≥60'];
+  let thtml = '';
+  times.forEach((t,i) => {
+    const val = typeof t === 'string' ? 60 : t;
+    const active = plan.time === val;
+    thtml += `<button onclick="selectTime(${val})" class="py-2 rounded-xl text-sm font-bold ${active?'bg-orange-400 text-white':'bg-gray-100 text-gray-600'}">${t}分</button>`;
+  });
+  document.getElementById('timeSelector').innerHTML = thtml;
+  
+  // 自我评价
+  const evals = ['完成','专注','准时','效率','正确'];
+  let ehtml = '';
+  evals.forEach(ev => {
+    const val = plan.eval[ev] || 0;
+    let stars = '';
+    for (let i=1;i<=5;i++) {
+      stars += `<button onclick="selectEval('${ev}',${i})" class="text-xl ${i<=val?'':'opacity-30'}">${i<=val?'⭐':'☆'}</button>`;
+    }
+    ehtml += `<div class="text-center"><div class="text-xs text-gray-500 mb-1">${ev}</div><div>${stars}</div></div>`;
+  });
+  document.getElementById('selfEval').innerHTML = ehtml;
+}
+
+function selectTime(t) {
+  const d = today();
+  DB.dailyPlan[d].time = t;
+  saveDB();
+  renderDaily();
+}
+
+function selectEval(ev, val) {
+  const d = today();
+  DB.dailyPlan[d].eval[ev] = val;
+  // 完成自评给奖励分
+  const total = Object.values(DB.dailyPlan[d].eval).reduce((a,b)=>a+b,0);
+  if (total >= 20 && !DB.dailyPlan[d].evalDone) {
+    DB.dailyPlan[d].evalDone = true;
+    setTimeout(()=>addScore(5,'完成自律日计划自我评价'),100);
+  }
+  saveDB();
+  renderDaily();
+}
+
+function saveDaily() {
+  saveDB();
+  showToast('💾 计划已保存！');
+  renderHome();
+}
+
+// ==================== 小约定切换 ====================
+function showRule(btn, name) {
+  document.querySelectorAll('#page-rules .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('[id^="rule-"]').forEach(el => el.classList.remove('active'));
+  document.getElementById('rule-'+name).classList.add('active');
+}
+
+// ==================== 设置 ====================
+function saveSettings() {
+  DB.name = document.getElementById('inputName').value.trim() || '小朋友';
+  saveDB();
+  showToast('✅ 设置已保存！');
+  renderHome();
+}
+function exportData() {
+  const blob = new Blob([JSON.stringify(DB, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `家庭积分打卡数据_${today()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📤 导出成功！');
+}
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        DB = Object.assign(DB, data);
+        saveDB();
+        showToast('📥 导入成功！');
+        renderHome();
+      } catch(err) { showToast('❌ 文件格式错误'); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+function resetData() {
+  if (!confirm('⚠️ 确定要清空所有数据吗？此操作不可恢复！')) return;
+  if (!confirm('再次确认：真的要重置吗？')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+// ==================== 启动 ====================
+loadDB();
+document.getElementById('inputName').value = DB.name;
+renderHome();
+
+// ==================== PWA Service Worker 注册 ====================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(reg => console.log('✅ SW 注册成功', reg.scope))
+      .catch(err => console.warn('SW 注册失败（本地file打开会失败，需用http）:', err));
+  });
+}
+// 监听安装事件（浏览器触发"添加到主屏幕"）
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // 可以在这里给用户一个"安装APP"的提示
+});
+window.addEventListener('appinstalled', () => {
+  console.log('🎉 APP 已安装到主屏幕！');
+});
+</script>
+</body>
+</html>
