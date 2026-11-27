@@ -397,7 +397,15 @@
 
   <!-- 做作业约定 -->
   <div id="rule-homework" class="card p-4 space-y-3">
-    <div class="font-bold text-center text-lg text-orange-600 mb-2">✏️ 做作业小约定</div>
+    <div class="flex items-center justify-between mb-2">
+      <div class="font-bold text-center text-lg text-orange-600 flex-1">✏️ 做作业小约定</div>
+      <button onclick="speakRule('homework')" class="flex items-center gap-1 bg-orange-500 text-white px-3 py-1.5 rounded-full text-sm font-bold active:scale-95" id="speak-homework">
+        🔊 播报
+      </button>
+      <button onclick="stopSpeak()" class="hidden items-center gap-1 bg-gray-500 text-white px-3 py-1.5 rounded-full text-sm font-bold active:scale-95" id="stop-homework">
+        ⏹ 停止
+      </button>
+    </div>
     <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
       <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">1</div>
       <div class="text-gray-700">坐到学习桌前，喝水、上厕所、抠鼻屎问题先全部解决。</div>
@@ -410,29 +418,29 @@
       <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">3</div>
       <div class="text-gray-700">准备今日作业、铅笔、橡皮擦。</div>
     </div>
-    <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
-      <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">4</div>
-      <div class="text-gray-700">写字要求：可以慢一点，"做作业"要横平竖直不出格。</div>
+    <div class="flex items-start gap-3 p-3 bg-orange-100 rounded-xl border-2 border-orange-300">
+      <div class="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold shrink-0">4</div>
+      <div class="text-gray-800 font-bold">📌 坐姿端正，不趴下，眼睛离本子一尺远，手握笔一寸高。</div>
     </div>
     <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
       <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">5</div>
-      <div class="text-gray-700">做题前要读题，读出声，不漏字。</div>
+      <div class="text-gray-700">写字横平竖直，可以慢一点，但要工整不出格。</div>
     </div>
     <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
       <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">6</div>
-      <div class="text-gray-700">不会做的留下来做 → 下一个。</div>
+      <div class="text-gray-700">做题前要读题，读出声，不漏字。</div>
     </div>
     <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
       <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">7</div>
-      <div class="text-gray-700">学习时不说话，不随意离开书桌。</div>
+      <div class="text-gray-700">不会做的先放一放，先做下一题。</div>
     </div>
     <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
       <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">8</div>
-      <div class="text-gray-700">做完作业检查完放到一边，妈妈检查签字。</div>
+      <div class="text-gray-700">学习时不说话，不随意离开书桌。</div>
     </div>
     <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
       <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">9</div>
-      <div class="text-gray-700">坐姿端正，不趴下。</div>
+      <div class="text-gray-700">做完作业检查完放到一边，妈妈检查签字。</div>
     </div>
     <div class="flex items-start gap-3 p-3 bg-orange-50 rounded-xl">
       <div class="w-8 h-8 bg-orange-400 text-white rounded-full flex items-center justify-center font-bold shrink-0">10</div>
@@ -443,7 +451,15 @@
   <!-- 数学约定 -->
   <div id="rule-math" class="page">
     <div class="card p-4 space-y-3">
-      <div class="font-bold text-center text-lg text-blue-600 mb-2">🔢 做数学题小约定</div>
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-bold text-center text-lg text-blue-600 flex-1">🔢 做数学题小约定</div>
+        <button onclick="speakRule('math')" class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1.5 rounded-full text-sm font-bold active:scale-95" id="speak-math">
+          🔊 播报
+        </button>
+        <button onclick="stopSpeak()" class="hidden items-center gap-1 bg-gray-500 text-white px-3 py-1.5 rounded-full text-sm font-bold active:scale-95" id="stop-math">
+          ⏹ 停止
+        </button>
+      </div>
       <div class="bg-blue-50 rounded-2xl p-4 text-center">
         <div class="text-5xl font-bold text-blue-500 mb-3">读</div>
         <div class="font-bold text-gray-800 mb-1">1. 仔细读题</div>
@@ -470,7 +486,15 @@
   <!-- 课外阅读约定 -->
   <div id="rule-reading" class="page">
     <div class="card p-4 space-y-3">
-      <div class="font-bold text-center text-lg text-green-600 mb-2">📖 课外阅读小约定</div>
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-bold text-center text-lg text-green-600 flex-1">📖 课外阅读小约定</div>
+        <button onclick="speakRule('reading')" class="flex items-center gap-1 bg-green-500 text-white px-3 py-1.5 rounded-full text-sm font-bold active:scale-95" id="speak-reading">
+          🔊 播报
+        </button>
+        <button onclick="stopSpeak()" class="hidden items-center gap-1 bg-gray-500 text-white px-3 py-1.5 rounded-full text-sm font-bold active:scale-95" id="stop-reading">
+          ⏹ 停止
+        </button>
+      </div>
       <div class="bg-green-50 rounded-2xl p-4">
         <div class="flex items-center gap-3 mb-2">
           <div class="w-10 h-10 bg-green-400 text-white rounded-full flex items-center justify-center font-bold text-lg">1</div>
@@ -509,6 +533,62 @@
       <input id="inputName" class="w-full border-2 border-yellow-200 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-400" placeholder="请输入昵称">
     </div>
     <button onclick="saveSettings()" class="btn-primary w-full py-3 font-bold">💾 保存设置</button>
+  </div>
+
+  <!-- 🔊 语音设置 -->
+  <div class="card p-4 mt-4">
+    <div class="flex items-center justify-between mb-3">
+      <div class="font-bold text-gray-800">🔊 语音播报设置</div>
+      <button onclick="testVoiceSettings()" class="text-sm bg-orange-100 text-orange-600 px-3 py-1 rounded-full font-bold active:scale-95">🔁 试听</button>
+    </div>
+
+    <!-- 语音模式预设 -->
+    <div class="mb-4">
+      <div class="text-xs text-gray-500 mb-2">🎭 选个声音风格：</div>
+      <div class="grid grid-cols-4 gap-1.5" id="voicePresets">
+        <button onclick="setVoicePreset('gentle')" class="voice-preset p-2 rounded-xl text-xs border-2 active:scale-95" data-preset="gentle">
+          👩‍🦰<br>温柔妈妈
+        </button>
+        <button onclick="setVoicePreset('lively')" class="voice-preset p-2 rounded-xl text-xs border-2 active:scale-95" data-preset="lively">
+          👧<br>活泼阿姨
+        </button>
+        <button onclick="setVoicePreset('father')" class="voice-preset p-2 rounded-xl text-xs border-2 active:scale-95" data-preset="father">
+          👨<br>沉稳爸爸
+        </button>
+        <button onclick="setVoicePreset('custom')" class="voice-preset p-2 rounded-xl text-xs border-2 active:scale-95" data-preset="custom">
+          ⚙️<br>自定义
+        </button>
+      </div>
+    </div>
+
+    <!-- 三个滑块 -->
+    <div class="space-y-3">
+      <div>
+        <div class="flex justify-between text-xs text-gray-600 mb-1">
+          <span>🐢 速度</span>
+          <span id="rateLabel">0.9x（稍慢）</span>
+        </div>
+        <input type="range" id="voiceRate" min="0.5" max="1.5" step="0.1" value="0.9" oninput="onVoiceChange()" class="w-full accent-orange-500">
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-gray-600 mb-1">
+          <span>🎵 音调</span>
+          <span id="pitchLabel">1.1（温柔）</span>
+        </div>
+        <input type="range" id="voicePitch" min="0.5" max="2.0" step="0.1" value="1.1" oninput="onVoiceChange()" class="w-full accent-orange-500">
+      </div>
+      <div>
+        <div class="flex justify-between text-xs text-gray-600 mb-1">
+          <span>🔊 音量</span>
+          <span id="volLabel">100%</span>
+        </div>
+        <input type="range" id="voiceVol" min="0.3" max="1.0" step="0.1" value="1.0" oninput="onVoiceChange()" class="w-full accent-orange-500">
+      </div>
+    </div>
+
+    <div class="mt-3 p-2 bg-blue-50 rounded-lg text-xs text-blue-600">
+      💡 建议：温柔妈妈模式 + 速度 0.8～0.9 + 音调 1.1～1.3
+    </div>
   </div>
 
   <div class="card p-4 mt-4">
@@ -552,16 +632,59 @@
       <div class="text-xl font-bold text-gray-800" id="scoreModalTitle">加分</div>
       <button onclick="closeScoreModal()" class="text-2xl text-gray-400">×</button>
     </div>
-    <div id="scoreOptions" class="grid grid-cols-2 gap-2">
+    <!-- 自定义积分（放最前面，最常用） -->
+    <div class="mb-4 p-3 rounded-xl" id="customArea" style="background:#FFF7ED;">
+      <div class="text-sm font-bold text-gray-700 mb-2">✏️ 灵活加减（部分完成/特殊情况用这个）</div>
+      <div class="flex gap-2 mb-2">
+        <input id="customScore" type="number" class="flex-1 border-2 border-orange-300 rounded-xl p-2 text-sm focus:outline-none focus:border-orange-500" placeholder="分数">
+        <input id="customReason" class="flex-1 border-2 border-orange-300 rounded-xl p-2 text-sm focus:outline-none focus:border-orange-500" placeholder="原因（可不填）">
+      </div>
+      <!-- 快速分数按钮 -->
+      <div class="flex gap-1 flex-wrap mb-2">
+        <span class="text-xs text-gray-500 mr-1 self-center">快速：</span>
+        <button onclick="setCustomScore(1)" class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-lg active:scale-95">+1</button>
+        <button onclick="setCustomScore(2)" class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-lg active:scale-95">+2</button>
+        <button onclick="setCustomScore(3)" class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-lg active:scale-95">+3</button>
+        <button onclick="setCustomScore(5)" class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-lg active:scale-95">+5</button>
+        <button onclick="setCustomScore(-1)" class="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-lg active:scale-95">-1</button>
+        <button onclick="setCustomScore(-2)" class="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-lg active:scale-95">-2</button>
+        <button onclick="setCustomScore(-3)" class="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-lg active:scale-95">-3</button>
+      </div>
+      <button onclick="customScore()" class="w-full py-2 font-bold rounded-xl text-white" id="customBtn">确认加分</button>
+    </div>
+    <div class="text-xs text-gray-400 mb-1">──────── 常用预设项 ────────</div>
+    <div id="scoreOptions" class="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto">
       <!-- 动态生成 -->
     </div>
-    <div class="mt-4 pt-4 border-t-2 border-gray-100">
-      <div class="text-sm text-gray-600 mb-2">自定义积分：</div>
-      <div class="flex gap-2">
-        <input id="customScore" type="number" class="flex-1 border-2 border-yellow-200 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-400" placeholder="输入分数">
-        <input id="customReason" class="flex-1 border-2 border-yellow-200 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-400" placeholder="原因">
-      </div>
-      <button onclick="customScore()" class="btn-primary w-full py-3 mt-3 font-bold">确认</button>
+  </div>
+</div>
+
+<!-- ==================== 学习方法引导弹窗 ==================== -->
+<div id="guideModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content" style="max-height:80vh; overflow-y:auto;">
+    <div class="flex justify-between items-center mb-3">
+      <div class="text-lg font-bold text-gray-800 flex-1" id="guideTitle">📋 语文预习五步法</div>
+      <button onclick="speakGuide()" class="flex items-center gap-1 text-sm px-3 py-1.5 rounded-full text-white font-bold active:scale-95" id="speakGuideBtn" style="background:#F59E0B;">
+        🔊 念给我听
+      </button>
+      <button onclick="stopSpeak()" class="hidden items-center gap-1 text-sm px-3 py-1.5 rounded-full bg-gray-500 text-white font-bold active:scale-95" id="stopGuideBtn">
+        ⏹ 停止
+      </button>
+      <button onclick="closeGuide()" class="text-2xl text-gray-400 ml-1">×</button>
+    </div>
+    <!-- 步骤列表（带勾选） -->
+    <div id="guideSteps" class="space-y-2 mb-4">
+      <!-- 动态生成 -->
+    </div>
+    <!-- 课文/任务输入 -->
+    <div id="guideExtra" class="mb-4">
+      <div class="text-sm font-bold text-gray-700 mb-2">📝 今天学了什么？（可选）</div>
+      <input id="guideTopic" class="w-full border-2 border-yellow-200 rounded-xl p-2 text-sm focus:outline-none focus:border-orange-400" placeholder="比如：《日月明》/ 分数加减法">
+    </div>
+    <!-- 打卡按钮 -->
+    <div class="flex gap-2">
+      <button onclick="closeGuide()" class="flex-1 py-3 font-bold rounded-xl border-2 border-gray-200 text-gray-600">稍后再做</button>
+      <button onclick="confirmGuide()" class="flex-1 py-3 font-bold rounded-xl text-white" id="guideConfirmBtn">✅ 全部完成，打卡 +3分</button>
     </div>
   </div>
 </div>
@@ -584,6 +707,7 @@ let DB = {
   pvCheck: {},       // {date: {chinese_pre:true, ...}}
   dailyPlan: {},     // {date: {subjects:[{name, items:[]}], time, eval:{完成:0,专注:0,...}}}
   currentMonth: new Date().getMonth() + 1,
+  voiceSettings: { preset:'gentle', rate:0.9, pitch:1.1, vol:1.0 }, // 语音设置
 };
 
 function loadDB() {
@@ -599,6 +723,179 @@ function showToast(msg) {
   t.textContent = msg;
   t.style.display = 'block';
   setTimeout(() => t.style.display = 'none', 2000);
+}
+
+// ==================== 学习方法引导数据 ====================
+const GUIDE_DATA = {
+  chinese_pre: {
+    title: '📖 语文预习五步法',
+    emoji: '📖',
+    subject: '语文',
+    type: '预习',
+    score: 3,
+    steps: [
+      { label: '读', detail: '出声朗读课文 3 遍，读准字音', icon: '🔊' },
+      { label: '标', detail: '标清自然段（儿歌标有几句），圈出生字', icon: '✏️' },
+      { label: '书', detail: '一类字书空 3 遍，记住笔顺', icon: '👆' },
+      { label: '组', detail: '二类字每字口头组 2 个词', icon: '💬' },
+      { label: '说', detail: '尝试说说课后题的答案', icon: '🗣️' },
+    ]
+  },
+  chinese_rev: {
+    title: '📖 语文复习四步法',
+    emoji: '📖',
+    subject: '语文',
+    type: '复习',
+    score: 2,
+    steps: [
+      { label: '读', detail: '再读一遍课文，想想主要讲了什么', icon: '📖' },
+      { label: '默', detail: '默写本课一类字（看拼音写汉字）', icon: '✍️' },
+      { label: '背', detail: '尝试背诵重点段落/儿歌', icon: '🧠' },
+      { label: '练', detail: '做课后练习或同步练习册', icon: '📝' },
+    ]
+  },
+  math_pre: {
+    title: '🔢 数学预习五步法',
+    emoji: '🔢',
+    subject: '数学',
+    type: '预习',
+    score: 3,
+    steps: [
+      { label: '看', detail: '看课本上的情境图，说说发现了什么信息', icon: '👀' },
+      { label: '读', detail: '读例题，圈出关键词和数字', icon: '🔍' },
+      { label: '想', detail: '自己先试着做一做例题的解法', icon: '🤔' },
+      { label: '问', detail: '把不懂的地方记下来（打个？号）', icon: '❓' },
+      { label: '练', detail: '尝试做一做"做一做"里的 1-2 题', icon: '💪' },
+    ]
+  },
+  math_rev: {
+    title: '🔢 数学复习四步法',
+    emoji: '🔢',
+    subject: '数学',
+    type: '复习',
+    score: 2,
+    steps: [
+      { label: '理', detail: '理一理今天学了什么知识（公式/方法）', icon: '📋' },
+      { label: '错', detail: '看看昨天/今天的错题，重做一遍', icon: '❌' },
+      { label: '练', detail: '完成同步练习或口算练习', icon: '📝' },
+      { label: '测', detail: '让爸妈出 5 道题检测一下', icon: '🎯' },
+    ]
+  },
+  english_pre: {
+    title: '🔤 英语预习四步法',
+    emoji: '🔤',
+    subject: '英语',
+    type: '预习',
+    score: 3,
+    steps: [
+      { label: '听', detail: '听课文录音 3 遍，模仿语音语调', icon: '🎧' },
+      { label: '读', detail: '跟着录音读课文，不会的单词圈出来', icon: '🗣️' },
+      { label: '词', detail: '认读单词表中的新单词', icon: '📚' },
+      { label: '译', detail: '试着翻译课文的大意', icon: '🌏' },
+    ]
+  },
+  english_rev: {
+    title: '🔤 英语复习四步法',
+    emoji: '🔤',
+    subject: '英语',
+    type: '复习',
+    score: 2,
+    steps: [
+      { label: '听', detail: '再听一遍课文录音，能跟上节奏吗', icon: '🎧' },
+      { label: '默', detail: '默写本课核心单词（看英写中/看中写英）', icon: '✍️' },
+      { label: '背', detail: '尝试背诵或分角色朗读课文', icon: '🧠' },
+      { label: '用', detail: '用今天学的句型造 2 个句子', icon: '💡' },
+    ]
+  }
+};
+
+let currentGuideKey = null; // 记录当前打开的是哪个引导
+
+function openGuide(key) {
+  currentGuideKey = key;
+  const g = GUIDE_DATA[key];
+  if (!g) return;
+  
+  // 标题
+  document.getElementById('guideTitle').textContent = `${g.emoji} ${g.title}`;
+  // 打卡按钮
+  const btn = document.getElementById('guideConfirmBtn');
+  btn.textContent = `✅ 全部完成，打卡 +${g.score}分`;
+  btn.style.background = g.subject === '语文' ? '#10B981' : (g.subject === '数学' ? '#3B82F6' : '#8B5CF6');
+  
+  // 生成步骤
+  let html = '';
+  g.steps.forEach((s, i) => {
+    html += `
+      <label class="flex items-start gap-3 p-3 rounded-xl border-2 border-gray-100 bg-gray-50 cursor-pointer active:scale-[0.98] transition">
+        <input type="checkbox" class="guide-check mt-1 w-5 h-5 accent-orange-500" data-idx="${i}" onchange="updateGuideProgress()">
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">${s.icon}</span>
+            <span class="font-bold text-gray-800 text-sm">${i+1}. ${s.label}</span>
+          </div>
+          <div class="text-xs text-gray-600 mt-1 ml-7">${s.detail}</div>
+        </div>
+      </label>
+    `;
+  });
+  document.getElementById('guideSteps').innerHTML = html;
+  document.getElementById('guideTopic').value = '';
+  document.getElementById('guideModal').style.display = 'flex';
+  updateGuideProgress();
+}
+
+function closeGuide() {
+  document.getElementById('guideModal').style.display = 'none';
+  currentGuideKey = null;
+}
+
+function updateGuideProgress() {
+  const checks = document.querySelectorAll('.guide-check');
+  const checked = document.querySelectorAll('.guide-check:checked').length;
+  const total = checks.length;
+  const btn = document.getElementById('guideConfirmBtn');
+  const allDone = checked === total;
+  
+  if (allDone) {
+    btn.style.opacity = '1';
+    btn.textContent = `✅ 全部完成 (${checked}/${total})，打卡 +${GUIDE_DATA[currentGuideKey].score}分`;
+  } else {
+    btn.style.opacity = '0.5';
+    btn.textContent = `👀 已完成 ${checked}/${total} 步`;
+  }
+}
+
+function confirmGuide() {
+  const checks = document.querySelectorAll('.guide-check');
+  const checked = document.querySelectorAll('.guide-check:checked').length;
+  const total = checks.length;
+  if (checked !== total) {
+    showToast(`还有 ${total - checked} 步没完成哦～`);
+    return;
+  }
+  const d = today();
+  const labels = {
+    chinese_pre:'语文预习', chinese_rev:'语文复习',
+    math_pre:'数学预习', math_rev:'数学复习',
+    english_pre:'英语预习', english_rev:'英语复习'
+  };
+  const scores = {chinese_pre:3, chinese_rev:2, math_pre:3, math_rev:2, english_pre:3, english_rev:2};
+  
+  if (!DB.pvCheck[d]) DB.pvCheck[d] = {};
+  if (DB.pvCheck[d][currentGuideKey]) { showToast('今日已打卡过了！🌟'); closeGuide(); return; }
+  
+  DB.pvCheck[d][currentGuideKey] = true;
+  
+  // 如果有填课文/任务，记录到 reason 里
+  const topic = document.getElementById('guideTopic').value.trim();
+  let reason = labels[currentGuideKey];
+  if (topic) reason += `《${topic}》`;
+  
+  addScore(scores[currentGuideKey], reason);
+  closeGuide();
+  renderPV();
+  showToast(`🎉 太棒了！完成 ${labels[currentGuideKey]} +${scores[currentGuideKey]}分`);
 }
 
 // ==================== 加分扣分项目 ====================
@@ -774,6 +1071,18 @@ let modalType = 'add';
 function openScoreModal(type) {
   modalType = type;
   document.getElementById('scoreModalTitle').textContent = type==='add' ? '➕ 加分项目' : '➖ 扣分项目';
+  // 动态切换自定义区域按钮颜色
+  const btn = document.getElementById('customBtn');
+  if (type==='add') {
+    btn.textContent = '✅ 确认加分';
+    btn.style.background = '#10B981'; // green
+  } else {
+    btn.textContent = '⚠️ 确认扣分';
+    btn.style.background = '#EF4444'; // red
+  }
+  // 清空上一次输入
+  document.getElementById('customScore').value = '';
+  document.getElementById('customReason').value = '';
   const options = type==='add' ? ADD_OPTIONS : MINUS_OPTIONS;
   // 按分类分组显示常用项
   const byCat = {};
@@ -809,10 +1118,21 @@ function addScore(score, reason) {
   renderHome();
 }
 
+function setCustomScore(v) {
+  document.getElementById('customScore').value = v;
+}
+
 function customScore() {
-  const score = parseInt(document.getElementById('customScore').value);
+  const raw = document.getElementById('customScore').value;
+  let score = parseInt(raw);
   const reason = document.getElementById('customReason').value || '自定义';
   if (!score) { showToast('请输入有效分数'); return; }
+  // 支持负数：自动切换加/减
+  if (score < 0) {
+    modalType = 'minus';
+    document.getElementById('customBtn').textContent = '⚠️ 确认扣分';
+    document.getElementById('customBtn').style.background = '#EF4444';
+  }
   addScore(Math.abs(score), reason);
 }
 
@@ -1049,15 +1369,8 @@ function quickPV(key) {
   const d = today();
   if (!DB.pvCheck[d]) DB.pvCheck[d] = {};
   if (DB.pvCheck[d][key]) { showToast('今日已打卡过了！🌟'); return; }
-  DB.pvCheck[d][key] = true;
-  const labels = {
-    chinese_pre:'语文预习', chinese_rev:'语文复习',
-    math_pre:'数学预习', math_rev:'数学复习',
-    english_pre:'英语预习', english_rev:'英语复习'
-  };
-  const scores = {chinese_pre:3, chinese_rev:2, math_pre:3, math_rev:2, english_pre:3, english_rev:2};
-  addScore(scores[key], labels[key]);
-  renderPV();
+  // 打开学习方法引导弹窗，让孩子一步步对照完成
+  openGuide(key);
 }
 
 // ==================== 自律日计划 ====================
@@ -1155,19 +1468,375 @@ function saveDaily() {
 }
 
 // ==================== 小约定切换 ====================
+
+// ==================== 语音播报数据 ====================
+// 预习复习引导语音数据（GUIDE_DATA 对应的口语化文本）
+const GUIDE_SPEAK_DATA = {
+  chinese_pre: {
+    intro: '亲爱的宝贝，我们来一起做语文预习，用五步法哦！你一定能做到的！',
+    items: [
+      '第一步，读。出声朗读课文三遍，要读准字音，加油！',
+      '第二步，标。标清自然段，儿歌的话标有几句，圈出生字。',
+      '第三步，书。一类字书空三遍，记住笔顺，慢慢来。',
+      '第四步，组。二类字每个字口头组两个词，想一想。',
+      '第五步，说。尝试说说课后题的答案，你最棒！',
+    ],
+    outro: '太棒了亲爱的宝贝！预习五步法完成！给自己加三分！继续加油哦！'
+  },
+  chinese_rev: {
+    intro: '亲爱的宝贝，我们来做语文复习，四步法！',
+    items: [
+      '第一步，读。再读一遍课文，想想主要讲了什么。',
+      '第二步，默。默写本课一类字，看拼音写汉字，仔细哦。',
+      '第三步，背。尝试背诵重点段落或儿歌，你能行！',
+      '第四步，练。做课后练习或同步练习册，认真做。',
+    ],
+    outro: '好样的亲爱的宝贝！复习完成！加两分！你真棒！'
+  },
+  math_pre: {
+    intro: '亲爱的宝贝，我们来做数学预习，五步法！你是数学小天才！',
+    items: [
+      '第一步，看。看课本上的情境图，说说发现了什么信息。',
+      '第二步，读。读例题，圈出关键词和数字。',
+      '第三步，想。自己先试着做一做例题的解法，开动脑筋！',
+      '第四步，问。把不懂的地方记下来，打个问号，大胆问。',
+      '第五步，练。尝试做一做做一做里的一两题，你可以的！',
+    ],
+    outro: '哇塞亲爱的宝贝！数学预习完成！加三分！太厉害了！'
+  },
+  math_rev: {
+    intro: '亲爱的宝贝，我们来做数学复习，四步法！',
+    items: [
+      '第一步，理。理一理今天学了什么知识，什么公式或方法。',
+      '第二步，错。看看昨天或今天的错题，重做一遍，不怕错。',
+      '第三步，练。完成同步练习或口算练习，慢慢做。',
+      '第四步，测。让爸妈出五道题检测一下，你准备好了吗？',
+    ],
+    outro: '真不错亲爱的宝贝！数学复习完成！加两分！继续加油！'
+  },
+  english_pre: {
+    intro: '亲爱的宝贝，我们来做英语预习，四步法！ABC 你最棒！',
+    items: [
+      '第一步，听。听课文录音三遍，模仿语音语调，认真听哦。',
+      '第二步，读。跟着录音读课文，不会的单词圈出来，大胆读。',
+      '第三步，词。认读单词表中的新单词，一个一个记住。',
+      '第四步，译。试着翻译课文的大意，你可以的！',
+    ],
+    outro: '好棒呀亲爱的宝贝！英语预习完成！加三分！你是小小翻译家！'
+  },
+  english_rev: {
+    intro: '亲爱的宝贝，我们来做英语复习，四步法！',
+    items: [
+      '第一步，听。再听一遍课文录音，能跟上节奏吗？',
+      '第二步，默。默写本课核心单词，看英写中或看中写英。',
+      '第三步，背。尝试背诵或分角色朗读课文，勇敢背出来。',
+      '第四步，用。用今天学的句型造两个句子，发挥想象力！',
+    ],
+    outro: '太厉害啦亲爱的宝贝！英语复习完成！加两分！你是最棒的！'
+  }
+};
+
+// 好习惯约定语音文本（RULE_TEXTS）
+const RULE_TEXTS = {
+  homework: {
+    title: '做作业小约定',
+    intro: '亲爱的宝贝，我们来一起念一下今天的做作业小约定，一共十条哦！请你边听边对照检查，相信你一定能做到！',
+    items: [
+      '第一条，坐到学习桌前，喝水、上厕所、抠鼻屎，这些问题先全部解决。',
+      '第二条，闹铃一响，准时写作业。说到做到！',
+      '第三条，准备好今日作业、铅笔、橡皮擦，收拾整齐。',
+      '第四条，坐姿端正，不趴下，眼睛离本子一尺远，手握笔一寸高。这条很重要哦，保护眼睛！',
+      '第五条，写字横平竖直，可以慢一点，但要工整不出格。',
+      '第六条，做题前要读题，读出声，不漏字。仔细读哦！',
+      '第七条，不会做的先放一放，先做下一题。',
+      '第八条，学习时不说话，不随意离开书桌，专注最重要！',
+      '第九条，做完作业检查完放到一边，等妈妈检查签字。',
+      '第十条，作业结束后，整理书桌，东西归位关灯。好习惯！',
+    ],
+    outro: '好啦亲爱的宝贝，十条约定念完了！特别是第四条坐姿，一定要记住哦！你一定能全部做到，妈妈相信你！加油！'
+  },
+  math: {
+    title: '做数学题小约定',
+    intro: '亲爱的宝贝，我们来一起念一下做数学题的小约定，四步法哦！数学是你的强项！',
+    items: [
+      '第一步，读。仔细读题，不漏字，不加字，不明白的多读两遍。',
+      '第二步，标。标出关键词，比如数量关系、问题，有图的话要结合图片想问题。',
+      '第三步，思。认真思考，需要草稿纸的话，可以在草稿纸上进行练习。',
+      '第四步，查。书面检查，做完后要检查，避免错题和漏题。',
+    ],
+    outro: '好样的亲爱的宝贝！数学四步法，读法标思查，记住了吗？你是数学小天才！加油！'
+  },
+  reading: {
+    title: '课外阅读小约定',
+    intro: '亲爱的宝贝，我们来一起念一下课外阅读小约定，一共三条！阅读让你变聪明！',
+    items: [
+      '第一条，指读文章。用手指着读，保证不漏字，不加字，不跳行。',
+      '第二条，有感情地阅读。语速慢一些，嘴巴张开，吐字清楚不磕巴。',
+      '第三条，总结文章。读完后简单总结时间、地点、人物、经过和结果。',
+    ],
+    outro: '太棒了亲爱的宝贝！阅读约定记住了吗？开始愉快的阅读吧，你是小小书虫！'
+  }
+};
+
+let isSpeaking = false;
+let currentRuleKey = null;
+
+function speakRule(key) {
+  // 如果正在播报同一个，就停止
+  if (isSpeaking && currentRuleKey === key) {
+    stopSpeak();
+    return;
+  }
+  // 先停掉之前的
+  stopSpeak();
+  
+  const r = RULE_TEXTS[key];
+  if (!r) return;
+  
+  // 检查浏览器支持
+  if (!window.speechSynthesis) {
+    showToast('抱歉，您的浏览器不支持语音播报 😢');
+    return;
+  }
+  
+  isSpeaking = true;
+  currentRuleKey = key;
+  
+  // 切换按钮状态
+  document.querySelectorAll('[id^="speak-"]').forEach(b => b.classList.add('hidden'));
+  document.querySelectorAll('[id^="stop-"]').forEach(b => b.classList.add('hidden'));
+  document.getElementById('stop-' + key).classList.remove('hidden');
+  
+  showToast('🔊 开始播报...');
+  
+  // 构建完整文本
+  const fullText = [
+    r.intro,
+    ...r.items,
+    r.outro
+  ].join(' ');
+  
+  // 分块朗读（浏览器对单段字数有限制，分成短句更自然）
+  const chunks = [r.intro, ...r.items, r.outro];
+  let idx = 0;
+  
+  function speakNext() {
+    if (idx >= chunks.length || !isSpeaking) {
+      finishSpeak();
+      return;
+    }
+    const utter = new SpeechSynthesisUtterance(chunks[idx]);
+    utter.lang = 'zh-CN';
+    // 从设置里读参数（温柔/活泼/沉稳预设）
+    const vs = DB.voiceSettings;
+    utter.rate = vs.rate ?? 0.9;
+    utter.pitch = vs.pitch ?? 1.1;
+    utter.volume = vs.vol ?? 1.0;
+    // 优先选温柔的中文女声
+    const voices = window.speechSynthesis.getVoices();
+    const zhVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('zh'));
+    const feminine = zhVoices.filter(v => /(xiaoxiao|tingting|mei|yaoyao|hui|yun|female|woman|xiaofeng|xiaoyi)/i.test(v.name));
+    utter.voice = feminine[0] || zhVoices[0] || null;
+    
+    utter.onend = () => {
+      idx++;
+      speakNext();
+    };
+    utter.onerror = () => {
+      finishSpeak();
+    };
+    
+    window.speechSynthesis.speak(utter);
+  }
+  
+  // 预热语音引擎（某些浏览器第一次调用需要等一下）
+  window.speechSynthesis.getVoices();
+  setTimeout(speakNext, 200);
+}
+
+// 学习方法引导也能念
+function speakGuide() {
+  if (!currentGuideKey || !GUIDE_SPEAK_DATA[currentGuideKey]) return;
+  // 复用 speakRule 的逻辑，只是数据源不同
+  const prevKey = currentRuleKey; // 保存，结束后恢复
+  const data = GUIDE_SPEAK_DATA[currentGuideKey];
+  
+  // 如果正在播报同一个，停止
+  if (isSpeaking && currentRuleKey === 'guide-' + currentGuideKey) {
+    stopSpeak();
+    return;
+  }
+  stopSpeak();
+  
+  if (!window.speechSynthesis) {
+    showToast('抱歉，您的浏览器不支持语音播报 😢');
+    return;
+  }
+  
+  isSpeaking = true;
+  currentRuleKey = 'guide-' + currentGuideKey;
+  
+  // 切换按钮（引导弹窗里的）
+  document.getElementById('speakGuideBtn').classList.add('hidden');
+  document.getElementById('stopGuideBtn').classList.remove('hidden');
+  showToast('🔊 开始念学习方法...');
+  
+  const chunks = [data.intro, ...data.items, data.outro];
+  let idx = 0;
+  function speakNext() {
+    if (idx >= chunks.length || !isSpeaking) { finishSpeak(); return; }
+    const utter = new SpeechSynthesisUtterance(chunks[idx]);
+    utter.lang = 'zh-CN';
+    const vs2 = DB.voiceSettings;
+    utter.rate = vs2.rate ?? 0.9;
+    utter.pitch = vs2.pitch ?? 1.1;
+    utter.volume = vs2.vol ?? 1.0;
+    const voices2 = window.speechSynthesis.getVoices();
+    const zhVoices2 = voices2.filter(v => v.lang && v.lang.toLowerCase().startsWith('zh'));
+    const fem2 = zhVoices2.filter(v => /(xiaoxiao|tingting|mei|yaoyao|hui|yun|female|woman)/i.test(v.name));
+    utter.voice = fem2[0] || zhVoices2[0] || null;
+    utter.onend = () => { idx++; speakNext(); };
+    utter.onerror = () => finishSpeak();
+    window.speechSynthesis.speak(utter);
+  }
+  window.speechSynthesis.getVoices();
+  setTimeout(speakNext, 200);
+}
+
+function stopSpeak() {
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+  finishSpeak();
+}
+
+function finishSpeak() {
+  isSpeaking = false;
+  // 恢复好习惯约定的按钮
+  document.querySelectorAll('[id^="speak-"]').forEach(b => b.classList.remove('hidden'));
+  document.querySelectorAll('[id^="stop-"]').forEach(b => b.classList.add('hidden'));
+  // 恢复引导弹窗的按钮
+  document.getElementById('speakGuideBtn').classList.remove('hidden');
+  document.getElementById('stopGuideBtn').classList.add('hidden');
+  currentRuleKey = null;
+}
+
 function showRule(btn, name) {
   document.querySelectorAll('#page-rules .tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('[id^="rule-"]').forEach(el => el.classList.remove('active'));
   document.getElementById('rule-'+name).classList.add('active');
+  // 切换 tab 时自动停掉播报
+  stopSpeak();
 }
 
 // ==================== 设置 ====================
 function saveSettings() {
   DB.name = document.getElementById('inputName').value.trim() || '小朋友';
+  // 同时保存语音设置
+  DB.voiceSettings.preset = document.querySelector('.voice-preset.active')?.dataset.preset || 'custom';
+  DB.voiceSettings.rate = parseFloat(document.getElementById('voiceRate').value);
+  DB.voiceSettings.pitch = parseFloat(document.getElementById('voicePitch').value);
+  DB.voiceSettings.vol = parseFloat(document.getElementById('voiceVol').value);
   saveDB();
   showToast('✅ 设置已保存！');
   renderHome();
+}
+
+// 初始化语音设置面板
+function initVoiceSettings() {
+  const vs = DB.voiceSettings || { preset:'gentle', rate:0.9, pitch:1.1, vol:1.0 };
+  document.getElementById('voiceRate').value = vs.rate;
+  document.getElementById('voicePitch').value = vs.pitch;
+  document.getElementById('voiceVol').value = vs.vol;
+  onVoiceChange();
+  // 高亮预设按钮
+  document.querySelectorAll('.voice-preset').forEach(b => {
+    b.classList.toggle('active', b.dataset.preset === vs.preset);
+  });
+  updatePresetStyles();
+}
+
+// 预设参数
+const VOICE_PRESETS = {
+  gentle: { label:'温柔妈妈', rate:0.85, pitch:1.25, vol:1.0 },
+  lively: { label:'活泼阿姨', rate:1.1, pitch:1.5, vol:1.0 },
+  father: { label:'沉稳爸爸', rate:0.8, pitch:0.8, vol:0.9 }
+};
+
+function setVoicePreset(name) {
+  if (name !== 'custom' && VOICE_PRESETS[name]) {
+    const p = VOICE_PRESETS[name];
+    document.getElementById('voiceRate').value = p.rate;
+    document.getElementById('voicePitch').value = p.pitch;
+    document.getElementById('voiceVol').value = p.vol;
+    onVoiceChange();
+  }
+  DB.voiceSettings.preset = name;
+  saveDB();
+  updatePresetStyles();
+}
+
+function updatePresetStyles() {
+  document.querySelectorAll('.voice-preset').forEach(b => {
+    const active = b.classList.contains('active');
+    b.style.background = active ? '#FED7AA' : '#FFF7ED';
+    b.style.borderColor = active ? '#F97316' : '#FED7AA';
+    b.style.color = active ? '#C2410C' : '#666';
+    b.classList.toggle('active', active);
+  });
+  // 重新判断当前选中
+  const current = DB.voiceSettings.preset;
+  document.querySelectorAll('.voice-preset').forEach(b => {
+    const match = b.dataset.preset === current;
+    b.style.background = match ? '#FED7AA' : '#FFF7ED';
+    b.style.borderColor = match ? '#F97316' : '#FED7AA';
+    b.style.color = match ? '#C2410C' : '#666';
+    if (match) b.classList.add('active'); else b.classList.remove('active');
+  });
+}
+
+function onVoiceChange() {
+  const r = parseFloat(document.getElementById('voiceRate').value);
+  const p = parseFloat(document.getElementById('voicePitch').value);
+  const v = parseFloat(document.getElementById('voiceVol').value);
+  // 更新标签
+  const rateText = r < 0.8 ? '慢（适合小朋友）' : r < 1.0 ? '稍慢' : r < 1.2 ? '正常' : '快';
+  document.getElementById('rateLabel').textContent = `${r.toFixed(1)}x（${rateText}）`;
+  const pitchText = p < 0.9 ? '低沉' : p < 1.1 ? '正常' : p < 1.3 ? '温柔' : '活泼';
+  document.getElementById('pitchLabel').textContent = `${p.toFixed(1)}（${pitchText}）`;
+  document.getElementById('volLabel').textContent = `${Math.round(v*100)}%`;
+  // 标记为自定义
+  document.querySelectorAll('.voice-preset').forEach(b => {
+    b.classList.toggle('active', b.dataset.preset === 'custom');
+  });
+  updatePresetStyles();
+}
+
+function testVoiceSettings() {
+  stopSpeak();
+  const r = parseFloat(document.getElementById('voiceRate').value);
+  const p = parseFloat(document.getElementById('voicePitch').value);
+  const v = parseFloat(document.getElementById('voiceVol').value);
+  speakText(`亲爱的宝贝，你好呀！这是试听声音，温柔妈妈模式，速度${r.toFixed(1)}，音调${p.toFixed(1)}，音量${Math.round(v*100)}%。如果你喜欢这个声音，就点保存吧！`, { rate:r, pitch:p, volume:v });
+}
+
+// 核心：通用语音合成（所有播报都用这个，自动应用设置）
+function speakText(text, opts = {}) {
+  if (!window.speechSynthesis) { showVoiceError(); return; }
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'zh-CN';
+  // 优先选温柔的中文女声
+  const voices = window.speechSynthesis.getVoices();
+  const zhVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('zh'));
+  // 优先级：名字里有 "woman/female/xiaoxiao/tingting/mei" 等关键词
+  const feminine = zhVoices.filter(v => /(xiaoxiao|tingting|mei|yaoyao|hui|yun|female|woman|xiaofeng|xiaoyi)/i.test(v.name));
+  u.voice = feminine[0] || zhVoices[0] || null;
+  u.rate = opts.rate ?? DB.voiceSettings.rate;
+  u.pitch = opts.pitch ?? DB.voiceSettings.pitch;
+  u.volume = opts.volume ?? DB.voiceSettings.vol;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
 }
 function exportData() {
   const blob = new Blob([JSON.stringify(DB, null, 2)], {type:'application/json'});
@@ -1209,7 +1878,14 @@ function resetData() {
 // ==================== 启动 ====================
 loadDB();
 document.getElementById('inputName').value = DB.name;
+initVoiceSettings(); // 初始化语音设置面板
 renderHome();
+
+// 语音引擎预热（某些浏览器要先 getVoices 一次才能用）
+if (window.speechSynthesis) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
 
 // ==================== PWA Service Worker 注册 ====================
 if ('serviceWorker' in navigator) {
