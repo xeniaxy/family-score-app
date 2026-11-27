@@ -535,6 +535,17 @@
     <button onclick="saveSettings()" class="btn-primary w-full py-3 font-bold">💾 保存设置</button>
   </div>
 
+  <!-- ↩️ 撤销上一步 -->
+  <div class="card p-4 mt-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="font-bold text-gray-800">↩️ 撤销上一步</div>
+        <div class="text-xs text-gray-500 mt-1" id="lastRecordInfo">还没有可以撤销的操作～</div>
+      </div>
+      <button onclick="undoLastAction()" class="bg-red-500 text-white px-4 py-2 rounded-xl font-bold text-sm active:scale-95" id="undoBtn" disabled style="opacity:0.4">撤销</button>
+    </div>
+  </div>
+
   <!-- 🔊 语音设置 -->
   <div class="card p-4 mt-4">
     <div class="flex items-center justify-between mb-3">
@@ -691,7 +702,26 @@
     <!-- 课文/任务输入 -->
     <div id="guideExtra" class="mb-4">
       <div class="text-sm font-bold text-gray-700 mb-2">📝 今天学了什么？（可选）</div>
-      <input id="guideTopic" class="w-full border-2 border-yellow-200 rounded-xl p-2 text-sm focus:outline-none focus:border-orange-400" placeholder="比如：《日月明》/ 分数加减法">
+      <input id="guideTopic" class="w-full border-2 border-yellow-200 rounded-xl p-2 text-sm focus:outline-none focus:border-orange-400 mb-2" placeholder="比如：《日月明》/ 分数加减法">
+      
+      <!-- 📷 拍照上传 -->
+      <div class="mt-2">
+        <div class="text-xs text-gray-500 mb-1">📷 拍张照留个纪念（选填，手机点下面按钮直接打开相机）</div>
+        <div class="flex gap-2 items-center">
+          <label class="flex-1 flex items-center justify-center gap-2 bg-orange-100 text-orange-600 p-2 rounded-xl font-bold text-sm active:scale-95 cursor-pointer">
+            <span>📷 拍照</span>
+            <input type="file" accept="image/*" capture="environment" onchange="onGuidePhoto(this)" class="hidden">
+          </label>
+          <label class="flex-1 flex items-center justify-center gap-2 bg-blue-100 text-blue-600 p-2 rounded-xl font-bold text-sm active:scale-95 cursor-pointer">
+            <span>🖼️ 相册</span>
+            <input type="file" accept="image/*" onchange="onGuidePhoto(this)" class="hidden">
+          </label>
+        </div>
+        <div id="guidePhotoPreview" class="hidden mt-2">
+          <img id="guidePhotoImg" class="w-full rounded-xl border-2 border-orange-200" style="max-height:200px;object-fit:contain;background:#FFF7ED;">
+          <button onclick="clearGuidePhoto()" class="text-xs text-red-500 mt-1 font-bold">🗑️ 删掉重拍</button>
+        </div>
+      </div>
     </div>
     <!-- 打卡按钮 -->
     <div class="flex gap-2">
@@ -860,6 +890,10 @@ function openGuide(key) {
 function closeGuide() {
   document.getElementById('guideModal').style.display = 'none';
   currentGuideKey = null;
+  // 📷 清空照片状态
+  currentGuidePhotoData = null;
+  document.getElementById('guidePhotoPreview').classList.add('hidden');
+  document.getElementById('guideTopic').value = '';
 }
 
 function updateGuideProgress() {
@@ -876,6 +910,42 @@ function updateGuideProgress() {
     btn.style.opacity = '0.5';
     btn.textContent = `👀 已完成 ${checked}/${total} 步`;
   }
+}
+
+// ==================== 📷 拍照上传 ====================
+let currentGuidePhotoData = null;
+
+function onGuidePhoto(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  // 压缩图片（手机拍的太大，存 localStorage 容易爆）
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      // 限制最大宽度 800px
+      const maxW = 800;
+      const scale = Math.min(1, maxW / img.width);
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      // 转成 jpeg，质量 0.7
+      currentGuidePhotoData = canvas.toDataURL('image/jpeg', 0.7);
+      // 预览
+      document.getElementById('guidePhotoImg').src = currentGuidePhotoData;
+      document.getElementById('guidePhotoPreview').classList.remove('hidden');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value = ''; // 清空让下次能选同一张
+}
+
+function clearGuidePhoto() {
+  currentGuidePhotoData = null;
+  document.getElementById('guidePhotoPreview').classList.add('hidden');
 }
 
 function confirmGuide() {
@@ -903,6 +973,18 @@ function confirmGuide() {
   const topic = document.getElementById('guideTopic').value.trim();
   let reason = labels[currentGuideKey];
   if (topic) reason += `《${topic}》`;
+  
+  // 📷 如果有拍照，存到 DB
+  if (currentGuidePhotoData) {
+    if (!DB.photos) DB.photos = {};
+    const pid = Date.now();
+    DB.photos[pid] = {
+      data: currentGuidePhotoData,
+      date: d,
+      time: new Date().toTimeString().slice(0,5),
+      reason: reason
+    };
+  }
   
   addScore(scores[currentGuideKey], reason);
   closeGuide();
@@ -998,6 +1080,7 @@ function showPage(id) {
   if (id === 'page-history') renderHistory();
   if (id === 'page-rewards') renderRewards();
   if (id === 'page-morning') renderMW();
+  if (id === 'page-settings') refreshUndoBtn();
   if (id === 'page-english') renderEnglish();
   if (id === 'page-preview') renderPV();
   if (id === 'page-daily') renderDaily();
@@ -1172,13 +1255,22 @@ function renderHistory() {
     const dayMinus = groups[date].filter(r=>r.type==='minus').reduce((s,r)=>s+r.score,0);
     html += `<div class="text-xs font-bold text-gray-500 mt-3 mb-1">${date} <span class="text-green-600">+${dayAdd}</span> <span class="text-red-500">-${dayMinus}</span> <span class="text-orange-500">=${dayAdd-dayMinus}</span></div>`;
     groups[date].forEach(r => {
+      // 📷 找对应的照片
+      const photo = Object.values(DB.photos || {}).find(p => p.date === r.date && p.reason === r.reason);
+      let photoHtml = '';
+      if (photo) {
+        photoHtml = `<img src="${photo.data}" class="mt-2 w-full rounded-lg border border-gray-200" style="max-height:150px;object-fit:cover;">`;
+      }
       html += `
-        <div class="flex items-center justify-between p-3 rounded-xl ${r.type==='add'?'bg-green-50':'bg-red-50'} mb-2">
-          <div>
-            <div class="text-sm font-bold text-gray-700">${r.reason}</div>
-            <div class="text-xs text-gray-400">${r.time}</div>
+        <div class="p-3 rounded-xl ${r.type==='add'?'bg-green-50':'bg-red-50'} mb-2">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="text-sm font-bold text-gray-700">${r.reason}</div>
+              <div class="text-xs text-gray-400">${r.time}</div>
+            </div>
+            <div class="font-bold ${r.type==='add'?'text-green-600':'text-red-500'} text-lg">${r.type==='add'?'+':'-'}${r.score}</div>
           </div>
-          <div class="font-bold ${r.type==='add'?'text-green-600':'text-red-500'} text-lg">${r.type==='add'?'+':'-'}${r.score}</div>
+          ${photoHtml}
         </div>`;
     });
   });
@@ -1755,6 +1847,44 @@ function saveSettings() {
   DB.voiceSettings.vol = parseFloat(document.getElementById('voiceVol').value);
   saveDB();
   showToast('✅ 设置已保存！');
+  renderHome();
+}
+
+// ==================== ↩️ 撤销上一步 ====================
+function refreshUndoBtn() {
+  const btn = document.getElementById('undoBtn');
+  const info = document.getElementById('lastRecordInfo');
+  if (!DB.records || DB.records.length === 0) {
+    btn.disabled = true;
+    btn.style.opacity = 0.4;
+    info.textContent = '还没有可以撤销的操作～';
+    return;
+  }
+  const last = DB.records[DB.records.length - 1];
+  const sign = last.type === 'add' ? '➕' : '➖';
+  const scoreSign = last.type === 'add' ? '+' : '-';
+  btn.disabled = false;
+  btn.style.opacity = 1;
+  info.textContent = `${sign} ${scoreSign}${last.score}分 · ${last.reason} · ${last.date} ${last.time}`;
+}
+
+function undoLastAction() {
+  if (!DB.records || DB.records.length === 0) return;
+  const last = DB.records.pop();
+  if (last.type === 'add') {
+    DB.totalScore -= last.score;
+  } else {
+    DB.totalScore += last.score;
+  }
+  // 同时清除对应的打卡标记
+  const reason = last.reason || '';
+  const d = last.date;
+  if (reason.includes('早读晚背打卡')) delete DB.morningCheck[d];
+  if (reason.includes('今日听写')) delete DB.engListen[d];
+  if (reason.includes('今日默写')) delete DB.engWrite[d];
+  saveDB();
+  showToast(`↩️ 已撤销 ${last.type === 'add' ? '+' : '-'}${last.score}分（${last.reason}）`);
+  refreshUndoBtn();
   renderHome();
 }
 
