@@ -158,7 +158,7 @@
     </div>
   </div>
 
-  <!-- 今日任务快览 -->
+  <!-- 📋 今日任务快览 -->
   <div class="card p-4 mb-4">
     <div class="flex items-center justify-between mb-3">
       <div class="font-bold text-lg text-gray-800">📋 今日打卡</div>
@@ -166,6 +166,21 @@
     </div>
     <div class="grid grid-cols-3 gap-3" id="todayTasks">
       <!-- 动态生成 -->
+    </div>
+  </div>
+
+  <!-- 🌟 今日小语（养有力量的女儿）-->
+  <div class="card p-4 mb-4" style="background:linear-gradient(135deg,#FEF3C7,#FCE7F3);">
+    <div class="flex items-center justify-between mb-2">
+      <div class="font-bold text-gray-800 flex items-center gap-1">🌟 今日小语</div>
+      <button onclick="speakQuote()" class="text-xs bg-pink-400 text-white px-3 py-1 rounded-full font-bold active:scale-95">🔊 念给我听</button>
+    </div>
+    <div id="quoteEmoji" class="text-2xl mb-1">💖</div>
+    <div id="quoteText" class="text-sm text-gray-700 leading-relaxed">正在加载...</div>
+    <div class="flex gap-2 mt-3">
+      <button onclick="prevQuote()" class="text-xs bg-white text-gray-600 px-3 py-1 rounded-full font-bold active:scale-95 border border-gray-200">← 上一条</button>
+      <button onclick="nextQuote()" class="text-xs bg-white text-gray-600 px-3 py-1 rounded-full font-bold active:scale-95 border border-gray-200">下一条 →</button>
+      <button onclick="markQuoteRead()" class="text-xs bg-pink-500 text-white px-3 py-1 rounded-full font-bold active:scale-95 ml-auto">❤️ 记住了</button>
     </div>
   </div>
 
@@ -989,8 +1004,109 @@ function confirmGuide() {
   addScore(scores[currentGuideKey], reason);
   closeGuide();
   renderPV();
+  
+  // 📚 如果有拍照，弹出学习指导建议
+  if (currentGuidePhotoData && STUDY_TIPS[currentGuideKey]) {
+    const tips = STUDY_TIPS[currentGuideKey];
+    const randomTip = tips[Math.floor(Math.random() * tips.length)];
+    setTimeout(() => {
+      showToast(`📚 学习建议：${randomTip}`, 4000);
+    }, 1500);
+  }
+  
   showToast(`🎉 太棒了！完成 ${labels[currentGuideKey]} +${scores[currentGuideKey]}分`);
 }
+
+// ==================== 🌟 今日小语（养有力量的女儿） ====================
+// 6 大主题，每条都有具体场景，不是空洞说教
+const QUOTES = [
+  // 💖 先学会好好爱自己
+  { emoji:'💖', cat:'爱自己', text:'今天数学没考好也没关系呀，你已经很努力了。分数不是衡量你的唯一标准，在妈妈心里你永远是最棒的宝贝。', voice:'亲爱的宝贝，今天数学没考好也没关系呀，你已经很努力了。分数不是衡量你的唯一标准，在妈妈心里你永远是最棒的宝贝。' },
+  { emoji:'💖', cat:'爱自己', text:'你不需要事事完美。吃饭掉饭粒没关系，画的画不够好看没关系，只要你认真做了，就值得被爱。', voice:'亲爱的宝贝，你不需要事事完美。吃饭掉饭粒没关系，画的画不够好看没关系，只要你认真做了，就值得被爱。' },
+  { emoji:'💖', cat:'爱自己', text:'穿裙子还是穿裤子，扎辫子还是剪短发，你喜欢就好。你的身体、你的穿着，都由你自己决定。', voice:'亲爱的宝贝，穿裙子还是穿裤子，扎辫子还是剪短发，你喜欢就好。你的身体、你的穿着，都由你自己决定。' },
+  { emoji:'💖', cat:'爱自己', text:'要是有人让你不舒服，你有权利转身走开，也有权利说"我不喜欢这样"。你的感受最重要。', voice:'亲爱的宝贝，要是有人让你不舒服，你有权利转身走开，也有权利说"我不喜欢这样"。你的感受最重要。' },
+  { emoji:'💖', cat:'爱自己', text:'今天想吃冰淇淋还是喝牛奶？想去公园还是在家看书？先听听自己心里想要什么。', voice:'亲爱的宝贝，今天想吃冰淇淋还是喝牛奶？想去公园还是在家看书？先听听自己心里想要什么。' },
+  
+  // 💪 有自己的想法和主见
+  { emoji:'💪', cat:'有主见', text:'兴趣班选画画还是跳舞？你自己决定就好。选了就认真学，妈妈支持你的每一个选择。', voice:'亲爱的宝贝，兴趣班选画画还是跳舞？你自己决定就好。选了就认真学，妈妈支持你的每一个选择。' },
+  { emoji:'💪', cat:'有主见', text:'课堂上老师问问题，不管别人对不对，你有自己的答案就勇敢说出来。说错了也没关系，敢说就很了不起。', voice:'亲爱的宝贝，课堂上老师问问题，不管别人对不对，你有自己的答案就勇敢说出来。说错了也没关系，敢说就很了不起。' },
+  { emoji:'💪', cat:'有主见', text:'别的小朋友都去玩一个游戏，你不想玩也没关系。大方说"我不想玩这个，我想玩XX"，勇敢表达自己。', voice:'亲爱的宝贝，别的小朋友都去玩一个游戏，你不想玩也没关系。大方说"我不想玩这个，我想玩XX"，勇敢表达自己。' },
+  { emoji:'💪', cat:'有主见', text:'同学都买同款铅笔盒，你不一定非要买。你觉得哪个好用就选哪个，不要被别人影响。', voice:'亲爱的宝贝，同学都买同款铅笔盒，你不一定非要买。你觉得哪个好用就选哪个，不要被别人影响。' },
+  
+  // 🛡️ 守住自己的底线
+  { emoji:'🛡️', cat:'守底线', text:'如果同学让你保密一件你觉得不对的事，不用勉强答应，告诉老师或妈妈。帮别人隐瞒不对的事，你会很累的。', voice:'亲爱的宝贝，如果同学让你保密一件你觉得不对的事，不用勉强答应，告诉老师或妈妈。帮别人隐瞒不对的事，你会很累的。' },
+  { emoji:'🛡️', cat:'守底线', text:'任何大人或小朋友，想让你不穿衣服拍照，或者摸你不能摸的地方，立刻说不，立刻跑开，立刻告诉妈妈。', voice:'亲爱的宝贝，任何大人或小朋友，想让你不穿衣服拍照，或者摸你不能摸的地方，立刻说不，立刻跑开，立刻告诉妈妈。' },
+  { emoji:'🛡️', cat:'守底线', text:'有人开你觉得不好笑的玩笑，直接说"我觉得不好笑，请不要再讲了"，不用勉强陪着笑。', voice:'亲爱的宝贝，有人开你觉得不好笑的玩笑，直接说"我觉得不好笑，请不要再讲了"，不用勉强陪着笑。' },
+  { emoji:'🛡️', cat:'守底线', text:'受了委屈别憋着，爸爸妈妈一直都在。你可以哭，可以说，可以跺脚，我们会听你说。', voice:'亲爱的宝贝，受了委屈别憋着，爸爸妈妈一直都在。你可以哭，可以说，可以跺脚，我们会听你说。' },
+  { emoji:'🛡️', cat:'守底线', text:'同学让你帮他写作业，你不想就说"不行哦，老师说要自己做"，好朋友也不能让你做不对的事。', voice:'亲爱的宝贝，同学让你帮他写作业，你不想就说"不行哦，老师说要自己做"，好朋友也不能让你做不对的事。' },
+  
+  // ✨ 心里有向往就大胆追
+  { emoji:'✨', cat:'敢追梦', text:'想要的玩具，好好表现争取；想去的游乐场，好好读书攒积分。勇敢努力，你想要的都能靠自己争取。', voice:'亲爱的宝贝，想要的玩具，好好表现争取；想去的游乐场，好好读书攒积分。勇敢努力，你想要的都能靠自己争取。' },
+  { emoji:'✨', cat:'敢追梦', text:'不必被"女孩子安稳就好"困住。想当宇航员就去了解宇宙，想当画家就多画画，想当科学家就多做实验。', voice:'亲爱的宝贝，不必被"女孩子安稳就好"困住。想当宇航员就去了解宇宙，想当画家就多画画，想当科学家就多做实验。' },
+  { emoji:'✨', cat:'敢追梦', text:'多读书，书里有整个世界。今天读一本绘本，明天读一本故事书，知识是谁也拿不走的宝藏。', voice:'亲爱的宝贝，多读书，书里有整个世界。今天读一本绘本，明天读一本故事书，知识是谁也拿不走的宝藏。' },
+  { emoji:'✨', cat:'敢追梦', text:'攒够积分换一个奖励，每天离目标近一点。小步快跑，你想要的美好，都在前方等你。', voice:'亲爱的宝贝，攒够积分换一个奖励，每天离目标近一点。小步快跑，你想要的美好，都在前方等你。' },
+  
+  // 🌈 别怕失败，敢尝试就好
+  { emoji:'🌈', cat:'敢尝试', text:'学骑自行车摔了？没关系，拍拍裤子继续学。摔倒不是失败，摔倒再爬起来才最棒。', voice:'亲爱的宝贝，学骑自行车摔了？没关系，拍拍裤子继续学。摔倒不是失败，摔倒再爬起来才最棒。' },
+  { emoji:'🌈', cat:'敢尝试', text:'第一次做蛋糕糊了？没关系，第二次就会更好。愿意去试已经很了不起，结果好不好都不重要。', voice:'亲爱的宝贝，第一次做蛋糕糊了？没关系，第二次就会更好。愿意去试已经很了不起，结果好不好都不重要。' },
+  { emoji:'🌈', cat:'敢尝试', text:'考试没考好？难过可以哭一会，但别放弃。把错题改过来，下次就会进步。哪怕绕了弯路，随时都能重新出发。', voice:'亲爱的宝贝，考试没考好？难过可以哭一会，但别放弃。把错题改过来，下次就会进步。哪怕绕了弯路，随时都能重新出发。' },
+  { emoji:'🌈', cat:'敢尝试', text:'不会游泳不敢下水？没关系，先在水里泡泡，慢慢学。敢把脚伸进去，就已经赢了一半。', voice:'亲爱的宝贝，不会游泳不敢下水？没关系，先在水里泡泡，慢慢学。敢把脚伸进去，就已经赢了一半。' },
+  
+  // 🌊 稳住情绪，内心有定力
+  { emoji:'🌊', cat:'稳情绪', text:'生气的时候先深呼吸，数 1、2、3，再开口说话。好好说"我生气了，因为..."比发脾气有用得多。', voice:'亲爱的宝贝，生气的时候先深呼吸，数1、2、3，再开口说话。好好说"我生气了，因为..."比发脾气有用得多。' },
+  { emoji:'🌊', cat:'稳情绪', text:'想哭就哭，哭完了擦干眼泪继续。难过脆弱是正常的，但别让自己一直陷在里面。', voice:'亲爱的宝贝，想哭就哭，哭完了擦干眼泪继续。难过脆弱是正常的，但别让自己一直陷在里面。' },
+  { emoji:'🌊', cat:'稳情绪', text:'别人夸你还是说你不好，都别太放在心上。做好自己的事，你自己知道在进步就好。', voice:'亲爱的宝贝，别人夸你还是说你不好，都别太放在心上。做好自己的事，你自己知道在进步就好。' },
+  { emoji:'🌊', cat:'稳情绪', text:'专注做好眼前这一件事。吃饭就好好吃饭，玩就好好玩，学习就好好学。一件一件来，内心就安定了。', voice:'亲爱的宝贝，专注做好眼前这一件事。吃饭就好好吃饭，玩就好好玩，学习就好好学。一件一件来，内心就安定了。' },
+];
+
+// ==================== 学习指导（拍照后根据学科给出建议） ====================
+const STUDY_TIPS = {
+  chinese_pre:  [
+    '📖 看看课文里有没有不认识的字，圈出来查拼音',
+    '📝 一类字会写了吗？在草稿纸上再写 3 遍',
+    '🎧 读课文的时候注意声调，普通话标准吗？',
+  ],
+  chinese_rev: [
+    '📖 今天学的生字会读会写了吗？遮住拼音再读一遍',
+    '✍️ 作业本里的错题改对了吗？改完记得检查',
+    '💬 课文里的好词好句，试着造一个自己的句子',
+  ],
+  math_pre: [
+    '📐 先看懂例题，例题用了什么方法？',
+    '🧮 准备草稿纸，不会算别空着，写写思路',
+    '❓ 有没有不懂的地方？先记下来，明天问老师',
+  ],
+  math_rev: [
+    '❌ 错题本里今天的错题，重新做一遍',
+    '🧮 计算时有没有抄错数字？检查一下竖式',
+    '💡 这道题还有别的解法吗？试试看',
+  ],
+  english_pre: [
+    '🔊 先听一遍录音，跟着读 3 遍',
+    '📝 今天的新词会拼读了吗？遮住音标再读',
+    '🎯 课文里的句子能翻译成中文吗？',
+  ],
+  english_rev: [
+    '✍️ 听写的词对了几个？错的每个改 3 遍',
+    '🔊 录音再听一遍，跟得上速度吗？',
+    '📖 今天学的句子能背下来吗？',
+  ],
+  homework_chinese: [
+    '✍️ 写字横平竖直，笔画顺序对吗？',
+    '📝 每个字写了几遍？别偷懒少写哦',
+    '🤔 组词对吗？看看字的意思对不对',
+  ],
+  homework_math: [
+    '🧮 竖式算对了吗？验算一遍',
+    '📐 有没有漏题？翻下一页前检查一下',
+    '✏️ 草稿纸用了吗？别心算容易错',
+  ],
+  homework_english: [
+    '🔊 写完每个词读 3 遍，会拼读吗？',
+    '✍️ 字母笔顺对吗？别写反了 b 和 d',
+    '📖 作业里的句子能读懂吗？',
+  ],
+};
 
 // ==================== 加分扣分项目 ====================
 const ADD_OPTIONS = [
@@ -1086,8 +1202,65 @@ function showPage(id) {
   if (id === 'page-daily') renderDaily();
 }
 
+// ==================== 🌟 今日小语渲染 ====================
+let quoteIdx = 0;
+
+function renderQuote() {
+  // 每天自动换一条（用日期计算，当天一样）
+  const today = new Date();
+  const dayOfYear = Math.floor((today - new Date(today.getFullYear(),0,0)) / 86400000);
+  quoteIdx = dayOfYear % QUOTES.length;
+  
+  // 如果用户手动翻了，用 DB 里存的 index
+  if (DB.quoteIdx != null) quoteIdx = DB.quoteIdx;
+  
+  const q = QUOTES[quoteIdx];
+  document.getElementById('quoteEmoji').textContent = q.emoji;
+  document.getElementById('quoteText').innerHTML = `<div class="text-xs text-pink-500 mb-1">· ${q.cat} ·</div>${q.text}`;
+}
+
+function prevQuote() {
+  quoteIdx = (quoteIdx - 1 + QUOTES.length) % QUOTES.length;
+  DB.quoteIdx = quoteIdx;
+  saveDB();
+  renderQuote();
+}
+
+function nextQuote() {
+  quoteIdx = (quoteIdx + 1) % QUOTES.length;
+  DB.quoteIdx = quoteIdx;
+  saveDB();
+  renderQuote();
+}
+
+function speakQuote() {
+  const q = QUOTES[quoteIdx];
+  stopSpeak();
+  const u = new SpeechSynthesisUtterance(q.voice);
+  u.lang = 'zh-CN';
+  const vs = DB.voiceSettings;
+  u.rate = vs.rate ?? 0.9;
+  u.pitch = vs.pitch ?? 1.1;
+  u.volume = vs.vol ?? 1.0;
+  const voices = window.speechSynthesis.getVoices();
+  const zhV = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('zh'));
+  const fem = zhV.filter(v => /(xiaoxiao|tingting|mei|yaoyao|hui|female|woman)/i.test(v.name));
+  u.voice = fem[0] || zhV[0] || null;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+function markQuoteRead() {
+  showToast('❤️ 好的妈妈/爸爸，我记住了！');
+  // 标记已读，存到 DB
+  if (!DB.quotesRead) DB.quotesRead = {};
+  DB.quotesRead[QUOTES[quoteIdx].text] = today();
+  saveDB();
+}
+
 // ==================== 首页渲染 ====================
 function renderHome() {
+  renderQuote();
   document.getElementById('childName').textContent = DB.name;
   const h = new Date().getHours();
   document.getElementById('greeting').textContent = h < 6 ? '🌙 夜深了' : h < 11 ? '☀️ 早上好！' : h < 14 ? '🍱 中午好！' : h < 18 ? '🌤️ 下午好！' : '🌆 晚上好！';
