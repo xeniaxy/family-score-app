@@ -775,11 +775,49 @@ function loadDB() {
 }
 function saveDB() { localStorage.setItem(STORAGE_KEY, JSON.stringify(DB)); }
 function today() { return new Date().toISOString().slice(0,10); }
-function showToast(msg) {
+function showToast(msg, duration = 2000, undoCb = null) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2000);
+  if (undoCb) {
+    t.innerHTML = `<span>${msg}</span><button id="toastUndo" class="ml-2 bg-white/30 px-2 py-0.5 rounded text-xs font-bold">↩️ 撤销</button>`;
+    t.style.display = 'flex';
+    t.style.alignItems = 'center';
+    const btn = document.getElementById('toastUndo');
+    btn.onclick = () => { undoCb(); t.style.display = 'none'; };
+    setTimeout(() => { t.style.display = 'none'; }, duration);
+  } else {
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, duration);
+  }
+}
+
+// 🎉 撒花动画（打卡成功时调用）
+function celebrate() {
+  const colors = ['#FBBF24','#F472B6','#60A5FA','#34D399','#A78BFA','#FB923C'];
+  for (let i = 0; i < 30; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.cssText = `position:fixed;top:-10px;left:${Math.random()*100}vw;width:8px;height:8px;background:${colors[i%6]};border-radius:50%;z-index:9999;pointer-events:none;transition:all ${1+Math.random()*1.5}s ease-in-out;`;
+    document.body.appendChild(c);
+    requestAnimationFrame(() => {
+      c.style.transform = `translateY(${window.innerHeight+50}px) rotate(${Math.random()*720}deg)`;
+      c.style.opacity = '0';
+    });
+    setTimeout(() => c.remove(), 2500);
+  }
+}
+
+// 📊 检查 localStorage 剩余空间，快满了提醒
+function checkStorage() {
+  try {
+    const test = 'x'.repeat(500000);
+    localStorage.setItem('__size_test__', test);
+    localStorage.removeItem('__size_test__');
+  } catch(e) {
+    if (e.name === 'QuotaExceededError') {
+      showToast('⚠️ 存储快满了！快去设置里导出备份', 4000);
+    }
+  }
 }
 
 // ==================== 学习方法引导数据 ====================
@@ -1004,6 +1042,7 @@ function confirmGuide() {
   addScore(scores[currentGuideKey], reason);
   closeGuide();
   renderPV();
+  celebrate(); // 🎉 撒花
   
   // 📚 如果有拍照，弹出学习指导建议
   if (currentGuidePhotoData && STUDY_TIPS[currentGuideKey]) {
@@ -1014,7 +1053,10 @@ function confirmGuide() {
     }, 1500);
   }
   
-  showToast(`🎉 太棒了！完成 ${labels[currentGuideKey]} +${scores[currentGuideKey]}分`);
+  const recordedId = DB.records[DB.records.length - 1]?.id;
+  showToast(`🎉 太棒了！完成 ${labels[currentGuideKey]} +${scores[currentGuideKey]}分`, 3500, () => {
+    if (recordedId) undoOneRecord(recordedId);
+  });
 }
 
 // ==================== 🌟 今日小语（养有力量的女儿） ====================
@@ -1382,7 +1424,14 @@ function addScore(score, reason) {
   DB.totalScore += modalType==='add' ? score : -score;
   saveDB();
   closeScoreModal();
-  showToast(`${modalType==='add'?'➕':'➖'} ${modalType==='add'?'+':'-'}${score}分 - ${reason}`);
+  // 🎉 加分/扣分 也加庆祝动画
+  if (modalType === 'add' && score >= 3) celebrate();
+  checkStorage(); // 📊 存储检查
+  checkStreakMilestone(); // 🏆 连续打卡里程碑
+  const rid = record.id;
+  showToast(`${modalType==='add'?'➕':'➖'} ${modalType==='add'?'+':'-'}${score}分 - ${reason}`, modalType==='add' ? 3500 : 3000, () => {
+    undoOneRecord(rid);
+  });
   renderHome();
 }
 
@@ -1528,9 +1577,43 @@ function checkMW() {
   if (DB[key][d]) { showToast('今天已经打卡过了！🌟'); return; }
   DB[key][d] = true;
   addScore(3, `${label}打卡`);
-  // 触发加分后刷新
+  celebrate(); // 🎉 撒花
   renderMW();
   renderHome();
+}
+
+// ==================== 连续打卡里程碑 ====================
+function checkStreakMilestone() {
+  const milestones = [7, 14, 30, 50, 100, 365];
+  const streak = calcStreak();
+  if (milestones.includes(streak)) {
+    const key = `milestone_${streak}_${today()}`;
+    if (!DB[key]) {
+      DB[key] = true;
+      saveDB();
+      setTimeout(() => {
+        showToast(`🏆 恭喜！你已连续打卡 ${streak} 天！太棒了！`, 5000);
+        celebrate();
+      }, 2000);
+    }
+  }
+}
+
+function calcStreak() {
+  let streak = 0;
+  const now = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    const ds = d.toISOString().slice(0,10);
+    const hasMorning = DB.morningCheck?.[ds];
+    const hasEvening = DB.eveningCheck?.[ds];
+    const hasEng = DB.engListen?.[ds] || DB.engWrite?.[ds];
+    const hasPV = Object.values(DB.pvCheck?.[ds] || {}).some(Boolean);
+    if (hasMorning || hasEvening || hasEng || hasPV) streak++;
+    else break;
+  }
+  return streak;
 }
 
 // ==================== 英语单词 ====================
@@ -1572,14 +1655,15 @@ function checkEN(type) {
   const label = type==='listen' ? '英语听写' : '英语默写';
   if (DB['eng'+(type==='listen'?'Listen':'Write')][d]) { showToast('已经打卡过了！🌟'); return; }
   DB['eng'+(type==='listen'?'Listen':'Write')][d] = true;
-  // 如果两个都完成了，额外加积分
   const other = type==='listen' ? DB.engWrite[d] : DB.engListen[d];
-  if (other) {
-    addScore(3, `${label}（全部完成）`);
-  } else {
-    addScore(1, `${label}打卡`);
-  }
+  const score = other ? 3 : 1;
+  const reason = other ? `${label}（全部完成）` : `${label}打卡`;
+  addScore(score, reason);
+  celebrate(); // 🎉 撒花
+  checkStorage(); // 📊 存储检查
   renderEnglish();
+  const rid = DB.records[DB.records.length - 1]?.id;
+  showToast(`🎉 ${label} +${score}分`, 3500, () => { if (rid) undoOneRecord(rid); });
 }
 
 function saveNote(id) {
@@ -2297,7 +2381,40 @@ function resetData() {
 loadDB();
 document.getElementById('inputName').value = DB.name;
 initVoiceSettings(); // 初始化语音设置面板
+
+// 🧹 清理 30 天前的旧照片（防爆存储）
+if (DB.photos) {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 30);
+  const cutoffStr = cutoff.toISOString().slice(0,10);
+  Object.keys(DB.photos).forEach(pid => {
+    if (DB.photos[pid].date < cutoffStr) delete DB.photos[pid];
+  });
+  saveDB();
+}
+
+// 👧 用孩子的昵称替换所有语音模板里的"亲爱的宝贝"
+const childName = DB.name || '亲爱的宝贝';
+if (childName !== '小朋友') {
+  QUOTES.forEach(q => {
+    q.voice = q.voice.replace(/亲爱的宝贝/g, childName);
+  });
+  // GUIDE_DATA 里的 outro 也要换
+  Object.values(GUIDE_DATA).forEach(g => {
+    if (g.outro) g.outro = g.outro.replace(/亲爱的宝贝/g, childName);
+    if (g.intro) g.intro = g.intro.replace(/亲爱的宝贝/g, childName);
+    if (g.steps) g.steps = g.steps.map(s => s.replace(/亲爱的宝贝/g, childName));
+  });
+  // RULES_DATA 里也要换
+  ['homeworkRules','mathRules','readRules'].forEach(k => {
+    if (typeof RULES_DATA !== 'undefined' && RULES_DATA[k]?.outro) {
+      RULES_DATA[k].outro = RULES_DATA[k].outro.replace(/亲爱的宝贝/g, childName);
+    }
+  });
+}
+
 renderHome();
+checkStreakMilestone(); // 🏆 启动时检查里程碑
 
 // 语音引擎预热（某些浏览器要先 getVoices 一次才能用）
 if (window.speechSynthesis) {
